@@ -2,9 +2,7 @@ package mn.internhub.demo.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import mn.internhub.demo.api.dto.AuthResponse;
-import mn.internhub.demo.api.dto.LoginRequest;
-import mn.internhub.demo.api.dto.RegisterRequest;
+import mn.internhub.demo.api.dto.*;
 import mn.internhub.demo.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,10 +17,25 @@ public class AuthApi {
 
     private final AuthService authService;
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authService.register(request));
+    //оюутан бүртгэх
+    @PostMapping("/register/student")
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterStudentRequest request) {
+        return ResponseEntity.ok(authService.registerStudent(request));
     }
+
+    //багш бүртгэх
+    @PostMapping("/register/teacher")
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterTeacherRequest request) {
+        return ResponseEntity.ok(authService.registerTeacher(request));
+    }
+
+    //байгуулга бүртгэх
+    @PostMapping("/register/organization")
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterOrganizationRequest request) {
+        return ResponseEntity.ok(authService.registerOrganization(request));
+    }
+
+
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {

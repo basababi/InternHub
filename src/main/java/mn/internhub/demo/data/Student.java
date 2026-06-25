@@ -18,6 +18,7 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long studentId;
 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
     private Long userId;
 
@@ -32,7 +33,5 @@ public class Student {
     private String shortBio;
     private List<String> skills;
     private List<String> languages;
-
-
 
 }

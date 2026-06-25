@@ -19,7 +19,6 @@ public class Teacher {
 
     @Column(nullable = false, unique = true)
     private Long userId;
-
     private String firstName;
     private String lastName;
     private Double phone;
