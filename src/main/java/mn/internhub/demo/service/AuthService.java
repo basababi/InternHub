@@ -3,10 +3,12 @@ package mn.internhub.demo.service;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mn.internhub.demo.api.dto.*;
+import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.Teacher;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.data.enums.Role;
+import mn.internhub.demo.repository.OrganizationRepository;
 import mn.internhub.demo.repository.StudentRepository;
 import mn.internhub.demo.repository.TeacherRepository;
 import mn.internhub.demo.repository.UserRepository;
@@ -33,7 +35,8 @@ public class AuthService {
     private StudentRepository studentRepository;
     @Autowired
     private TeacherRepository teacherRepository;
-
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     public AuthResponse login(LoginRequest request) {
         return null;
@@ -67,8 +70,15 @@ public class AuthService {
     }
 
     public AuthResponse registerOrganization(@Valid RegisterOrganizationRequest request) {
-        baseRegister(request.baseRequest());
-        return null;
+        User user = baseRegister(request.baseRequest());
+        Organizations organizations = Organizations.builder()
+                .userId(user.getUserId())
+                .organizationName(request.organizationName())
+                .industry(request.industry())
+                .build();
+        organizationRepository.save(organizations);
+        String token = jwtService.generateToken(user);
+        return new AuthResponse(token);
     }
 
     //Helper functions
