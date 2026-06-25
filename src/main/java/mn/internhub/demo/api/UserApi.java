@@ -16,9 +16,9 @@ public class UserApi {
     @GetMapping("/me")
     public Map<String, Object> me(@AuthenticationPrincipal User user) {
         return Map.of(
-                "id", user.getId(),
-                "name", user.getName(),
+                "id", user.getUserId(),
                 "email", user.getEmail(),
                 "role", user.getRole());
     }
+
 }
