@@ -1,4 +1,4 @@
-package mn.internhub.demo.data.enums;
+package mn.internhub.demo.data;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
