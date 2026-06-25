@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mn.internhub.demo.api.dto.*;
 import mn.internhub.demo.data.Student;
+import mn.internhub.demo.data.Teacher;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.data.enums.Role;
 import mn.internhub.demo.repository.StudentRepository;
+import mn.internhub.demo.repository.TeacherRepository;
 import mn.internhub.demo.repository.UserRepository;
 import mn.internhub.demo.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private TeacherRepository teacherRepository;
 
 
     public AuthResponse login(LoginRequest request) {
@@ -50,8 +54,16 @@ public class AuthService {
 
 
     public AuthResponse registerTeacher(@Valid RegisterTeacherRequest request) {
-        baseRegister(request.baseRequest());
-        return null;
+        User user = baseRegister(request.baseRequest());
+        Teacher teacher = Teacher.builder()
+                .userId(user.getUserId())
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .phone(request.phone())
+                .build();
+        teacherRepository.save(teacher);
+        String token = jwtService.generateToken(user);
+        return new AuthResponse(token);
     }
 
     public AuthResponse registerOrganization(@Valid RegisterOrganizationRequest request) {
@@ -60,7 +72,7 @@ public class AuthService {
     }
 
     //Helper functions
-    private User baseRegister(RegisterBaseRequest reqUser){
+    private User baseRegister(RegisterBaseRequest reqUser) {
         LocalDateTime now = LocalDateTime.now();
         User user = User.builder()
                 .email(reqUser.email())
