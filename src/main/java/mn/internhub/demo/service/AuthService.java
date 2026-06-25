@@ -2,6 +2,7 @@ package mn.internhub.demo.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.*;
 import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.Student;
@@ -23,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -53,6 +55,7 @@ public class AuthService {
 
 
     public AuthResponse registerTeacher(@Valid RegisterTeacherRequest request) {
+        log.info("Энэ хүртэл бол ямар ч асуудалгүй явлаа");
         User user = baseRegister(request.baseRequest());
         Teacher teacher = Teacher.builder()
                 .userId(user.getUserId())
@@ -91,6 +94,13 @@ public class AuthService {
         return user;
     }
     public AuthResponse login(LoginRequest request) {
-        return null;
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new IllegalStateException("User not found: " + request.email()));
+
+        String token = jwtService.generateToken(user);
+        return new AuthResponse(token);
     }
 }

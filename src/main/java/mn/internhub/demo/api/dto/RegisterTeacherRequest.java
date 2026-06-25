@@ -6,10 +6,9 @@ import jakarta.validation.constraints.Size;
 import mn.internhub.demo.data.enums.Role;
 
 public record RegisterTeacherRequest(
-        @NotBlank RegisterBaseRequest baseRequest,
+        RegisterBaseRequest baseRequest,
 
-        @NotBlank String firstName,
-        @NotBlank String lastName,
-        @Size(min= 8) Double phone
+        @NotBlank(message = "firstName дутуу байна") String firstName,
+        @NotBlank(message = "lastName дутуу байна") String lastName
 ) {
 }

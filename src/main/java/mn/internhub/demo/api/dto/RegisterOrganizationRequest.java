@@ -7,15 +7,9 @@ import mn.internhub.demo.data.enums.Role;
 import org.hibernate.validator.constraints.URL;
 
 public record RegisterOrganizationRequest(
-        @NotBlank RegisterBaseRequest baseRequest,
+        RegisterBaseRequest baseRequest,
 
-        @NotBlank String organizationName,
-        @NotBlank String industry,
-        String address,
-        String city,
-        @URL String site,
-        @URL String logoUrl,
-        String description,
-        @NotBlank Boolean isVerified
+        @NotBlank(message = "oragnizationName дутуу байна") String organizationName,
+        @NotBlank(message = "industry дутуу байна") String industry
 ) {
 }

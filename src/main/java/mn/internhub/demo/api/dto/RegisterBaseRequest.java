@@ -6,9 +6,11 @@ import jakarta.validation.constraints.Size;
 import mn.internhub.demo.data.enums.Role;
 
 public record RegisterBaseRequest(
-        @NotBlank @Email String email,
-        @NotBlank @Size(min = 6, message = "Password must be at least 6 characters") String password,
-        @NotBlank Role role,
+        @NotBlank(message = "email дутуу байна") @Email(message = "gmail чинь буруу байна дахин шалга")
+        String email,
+        @NotBlank(message = "password дутуу байна") @Size(min = 6, message = "Нууц үг чинь хамгийн багадаа6 оронтой байна")
+        String password,
+        @NotBlank(message = "Role-оо оруулаагүй байна") Role role,
         Boolean isActive
 ) {
 }
