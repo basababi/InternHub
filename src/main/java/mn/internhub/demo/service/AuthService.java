@@ -38,10 +38,6 @@ public class AuthService {
     @Autowired
     private OrganizationRepository organizationRepository;
 
-    public AuthResponse login(LoginRequest request) {
-        return null;
-    }
-
     public AuthResponse registerStudent(@Valid RegisterStudentRequest request) {
         User user = baseRegister(request.baseRequest());
 
@@ -93,5 +89,8 @@ public class AuthService {
                 .build();
         userRepository.save(user);
         return user;
+    }
+    public AuthResponse login(LoginRequest request) {
+        return null;
     }
 }
