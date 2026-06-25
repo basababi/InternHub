@@ -62,7 +62,6 @@ public class AuthService {
                 .userId(user.getUserId())
                 .firstName(request.firstName())
                 .lastName(request.lastName())
-                .phone(request.phone())
                 .build();
         teacherRepository.save(teacher);
         String token = jwtService.generateToken(user);
