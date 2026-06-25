@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import mn.internhub.demo.data.enums.Role;
 import org.aspectj.weaver.ast.Not;
 
+import java.net.URL;
+
 public record RegisterRequest(
 
         @NotBlank @Email String email,

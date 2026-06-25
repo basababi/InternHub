@@ -1,12 +1,7 @@
 package mn.internhub.demo.data;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
-
-import java.sql.Timestamp;
 
 @Entity
 @Getter
@@ -17,6 +12,7 @@ import java.sql.Timestamp;
 @Table(name = "organizations")
 public class Organizations {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
     private Long organizationId;
 
@@ -33,5 +29,5 @@ public class Organizations {
     private String logoUrl;
     private String description;
     private Boolean isVerified;
-    private Timestamp createdAt;
+
 }
