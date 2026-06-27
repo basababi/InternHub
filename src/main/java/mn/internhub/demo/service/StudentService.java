@@ -1,0 +1,64 @@
+package mn.internhub.demo.service;
+
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import mn.internhub.demo.api.dto.UpdateProfileRequest;
+import mn.internhub.demo.data.Student;
+import mn.internhub.demo.repository.StudentRepository;
+import mn.internhub.demo.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+@Slf4j
+@Service
+public class StudentService {
+    @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    public Student updateProfile( Long id,UpdateProfileRequest updateRequest) {
+        boolean userExist = userRepository.existsById(id);
+        if (!userExist) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user doesn't found");
+        }
+        log.info("хэрэглэгчийн id байна id нь :{}",id);
+        Student student = studentRepository.findByUserId(id);
+        log.info("тухайн id-д хариалагдах сурагчийн мэдээллийг авсан");
+        if(updateRequest.firstName() != null){
+            student.setFirstName(updateRequest.firstName());
+        }
+        if (updateRequest.lastName() != null){
+            student.setLastName(updateRequest.lastName());
+        }
+        if (updateRequest.major() != null) {
+            student.setMajor(updateRequest.major());
+        }
+        if (updateRequest.university() != null) {
+            student.setUniversity(updateRequest.university());
+        }
+        if (updateRequest.courseYear() != null){
+            student.setCourseYear(updateRequest.courseYear());
+        }
+        if (updateRequest.gpa() != null){
+            student.setGpa(updateRequest.gpa());
+        }
+        if (updateRequest.phone() != null){
+            student.setPhone(updateRequest.phone());
+        }
+        if (updateRequest.shortBio() != null){
+            student.setShortBio(updateRequest.shortBio());
+        }
+        if (updateRequest.skills() != null){
+            student.setSkills(updateRequest.skills());
+        }
+        if (updateRequest.languages() != null){
+            student.setLanguages(updateRequest.languages());
+        }
+        studentRepository.save(student);
+        log.info("сурагчийн мэдээллийг save хийсэн");
+        return student;
+    }
+}
