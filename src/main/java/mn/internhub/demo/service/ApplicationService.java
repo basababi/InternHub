@@ -65,5 +65,11 @@ public class ApplicationService {
         applicationRepository.save(application);
         log.info("амжилттай болсон байх магадлалтай: {}",application.getStatus());
     }
-
+    //applicaiton-аа сурагч нь өөрөө татгалзах
+    public void updateApplicationStatusByStudent(Long id) {
+        Application application = applicationRepository.getById(id);
+        application.setStatus(Status.WITHDRAWN);
+        applicationRepository.save(application);
+        log.info("сурагч нь ажилттай өөрчилсөн байх магадлалтай: {}",application.getStatus());
+    }
 }

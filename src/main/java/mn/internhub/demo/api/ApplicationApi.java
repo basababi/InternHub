@@ -1,5 +1,6 @@
 package mn.internhub.demo.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mn.internhub.demo.api.dto.RequestApplication;
 import mn.internhub.demo.api.dto.ResponseApplicationDetail;
@@ -27,10 +28,14 @@ public class ApplicationApi {
     public ResponseApplicationDetail getApplicationDetail(@AuthenticationPrincipal User user, @PathVariable Long applicationId){
         return applicationService.getApplicationDetail(applicationId);
     }
-    //
+    //Компани нь ирсэн application-ийг шүүгээд төлвийг нь өөрчилж болдог болгов
     @PutMapping("/{id}/")
-    public void updateApplicationStatus(@AuthenticationPrincipal User user,@PathVariable Long id, @RequestBody Status status){
+    public void updateApplicationStatus(@AuthenticationPrincipal User user,@PathVariable Long id, @Valid @RequestBody Status status){
         applicationService.updateApplicationStatus(id, status);
     }
-
+    //тухайн сурагч нь өөрийн илгээсэн application-ийн өөрөө цуцлах
+    @PutMapping("/{id}/withdraw")
+    public void updateApplicationStatusByStudent(@AuthenticationPrincipal User user,  @PathVariable Long id){
+        applicationService.updateApplicationStatusByStudent(id);
+    }
 }
