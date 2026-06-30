@@ -47,9 +47,10 @@ public class ApplicationService {
                 .build();
         return applicationRepository.save(application);
     }
+
     // багш эсвэл комнаны нь тухайн application-ийг илүү дэлгэрэнгүй харна үүнд нв сурагчийн дэлгэрэнгүй мэдээлэл орно.
     public ResponseApplicationDetail getApplicationDetail(Long applicationId) {
-        Application application = applicationRepository.findById(applicationId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Not found application"));
+        Application application = applicationRepository.findById(applicationId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found application"));
         Student student = studentRepository.findByUserId(application.getStudentId());
         ResponseApplicationDetail responseApplicationDetail = ResponseApplicationDetail.builder()
                 .firstName(student.getFirstName())
@@ -67,25 +68,30 @@ public class ApplicationService {
                 .build();
         return responseApplicationDetail;
     }
+
     //application id-гаар нь тухайн application-ий status-ийг өөрчилнө
     public void updateApplicationStatus(Long id, Status status) {
+        isApplicationExist(id);
         Application application = applicationRepository.getById(id);
         application.setStatus(status);
         applicationRepository.save(application);
-        log.info("амжилттай болсон байх магадлалтай: {}",application.getStatus());
+        log.info("амжилттай болсон байх магадлалтай: {}", application.getStatus());
     }
+
     //applicaiton-аа сурагч нь өөрөө татгалзах
     public void updateApplicationStatusByStudent(Long id) {
+        isApplicationExist(id);
         Application application = applicationRepository.getById(id);
         application.setStatus(Status.WITHDRAWN);
         applicationRepository.save(application);
-        log.info("сурагч нь ажилттай өөрчилсөн байх магадлалтай: {}",application.getStatus());
+        log.info("сурагч нь ажилттай өөрчилсөн байх магадлалтай: {}", application.getStatus());
     }
+
     //Компани нь өөр дээр нь ирсэн application хүсэлтүүдийг харах
     public List<ResponseApplicationsToOrganization> getPendingApplications(Long userId) {
         boolean isCompany = organizationRepository.existsByUserId(userId);
-        if (!isCompany){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Company user doesn't found");
+        if (!isCompany) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Company user doesn't found");
         }
         //тухайн хэрэглэгчийн хариалагдах байгуулгын id-ийг авна
         Long organizationId = organizationRepository.findByUserId(userId).getOrganizationId();
@@ -101,7 +107,6 @@ public class ApplicationService {
                             eachPostsApplication.stream()
                                     .map(each -> {
                                         Student student = studentRepository.findByUserId(each.getStudentId());
-
                                         return ResponseApplication.builder()
                                                 .userId(student.getUserId())
                                                 .firstName(student.getFirstName())
@@ -122,5 +127,13 @@ public class ApplicationService {
                 })
                 .toList();
         return responseFull;
+    }
+
+    //helper function
+    public void isApplicationExist(Long id) {
+        boolean applicationExist = applicationRepository.existsById(id);
+        if (!applicationExist) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "application doesn't found");
+        }
     }
 }

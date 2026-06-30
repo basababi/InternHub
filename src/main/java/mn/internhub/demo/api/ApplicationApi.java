@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/applications")
+@RequestMapping("/api/applications")
 public class ApplicationApi {
     @Autowired
     private ApplicationService applicationService;
@@ -46,4 +46,5 @@ public class ApplicationApi {
     public List<ResponseApplicationsToOrganization> getPendingApplications(@AuthenticationPrincipal User user){
         return applicationService.getPendingApplications(user.getUserId());
     }
+
 }
