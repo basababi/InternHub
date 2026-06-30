@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -27,7 +28,7 @@ public class Student {
     private String major;
     private String university;
     private Integer courseYear;
-    private Integer gpa;
+    private BigDecimal gpa;
     private Double phone;
     private String shortBio;
     private List<String> skills;

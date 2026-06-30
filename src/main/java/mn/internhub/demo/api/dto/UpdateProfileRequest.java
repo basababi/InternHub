@@ -1,5 +1,6 @@
 package mn.internhub.demo.api.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public record UpdateProfileRequest(
@@ -8,7 +9,7 @@ public record UpdateProfileRequest(
     String  major,
     String  university,
     Integer courseYear,
-    Integer gpa,
+    BigDecimal gpa,
     Double  phone,
     String  shortBio,
     List<String>skills,

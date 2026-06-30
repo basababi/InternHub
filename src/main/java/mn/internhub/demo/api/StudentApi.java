@@ -43,7 +43,7 @@ public class StudentApi {
     public Student getStudentProfile(@AuthenticationPrincipal User user, @PathVariable Long id){
         return studentService.getStudentProfile(user.getUserId(), id);
     }
-//    //тухайн сурагч нь өөрийн явуулсан анкетүүдийн мэдээллийг авах
+    //тухайн сурагч нь өөрийн явуулсан анкетүүдийн мэдээллийг авах
 //    @GetMapping("application")
 //    public
 }
