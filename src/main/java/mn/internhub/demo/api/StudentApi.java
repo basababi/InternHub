@@ -28,8 +28,6 @@ public class StudentApi {
         log.info("байгууллагын өгөгдлийг авсан");
         return studentService.getProfile(user.getUserId());
     }
-
-
     //өөрийн мэдээллийг дэлгэрэнгүй үүсгэх/өөрлчөх
     @PutMapping("/profile")
     public Student updateProfile(@AuthenticationPrincipal User user, @RequestBody UpdateProfileRequest updateRequest){
@@ -40,4 +38,12 @@ public class StudentApi {
         log.info("ямартай ч зөв хүслэт авсан");
         return studentService.updateProfile(user.getUserId(), updateRequest);
     }
+    //сурагчийн мэдээллийг багш, ажил олгогч нь дэлгэрэнгүй харах ингэхдээ тухайн сурагчийн student_id нь авах байдлаар
+    @GetMapping("/{id}")
+    public Student getStudentProfile(@AuthenticationPrincipal User user, @PathVariable Long id){
+        return studentService.getStudentProfile(user.getUserId(), id);
+    }
+//    //тухайн сурагч нь өөрийн явуулсан анкетүүдийн мэдээллийг авах
+//    @GetMapping("application")
+//    public
 }

@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.UpdateProfileRequest;
 import mn.internhub.demo.data.Student;
+import mn.internhub.demo.repository.OrganizationRepository;
 import mn.internhub.demo.repository.StudentRepository;
+import mn.internhub.demo.repository.TeacherRepository;
 import mn.internhub.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,10 @@ public class StudentService {
     private StudentRepository studentRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TeacherRepository teacherRepository;
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     public Student updateProfile( Long id,UpdateProfileRequest updateRequest) {
         boolean userExist = userRepository.existsById(id);
@@ -64,5 +70,20 @@ public class StudentService {
     //сурагчийн мэдээллийг явуулах
     public Student getProfile(Long userId) {
         return studentRepository.findByUserId(userId);
+    }
+
+    public Student getStudentProfile(Long userId, Long id) {
+        boolean isTeacher = teacherRepository.existsByUserId(userId);
+        boolean isOrganization = organizationRepository.existsByUserId(userId);
+        if(!isTeacher && !isOrganization){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Access denied");
+        }
+        boolean existStudent = studentRepository.existsById(id);
+        if(!existStudent) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user doesn't found");
+        }
+        log.info("Сурагчийн мэдээллийг явуулсан");
+        return studentRepository.findById(id).orElseThrow(IllegalStateException::new);
+
     }
 }
