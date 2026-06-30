@@ -98,6 +98,6 @@ public class StudentService {
     }
     //тухайн сурагч нь тодорхой нэг хүсэлтийг дэлгэрэнгүй харах
     public Application getApplicationDetail(Long applicationId) {
-        return applicationRepository.findById(applicationId).orElseThrow(IllegalStateException::newd);
+        return applicationRepository.findById(applicationId).orElseThrow(IllegalStateException::new);
     }
 }
