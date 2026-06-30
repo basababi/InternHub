@@ -2,7 +2,9 @@ package mn.internhub.demo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.applicationApiDto.RequestApplication;
+import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplication;
 import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationDetail;
+import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationsToOrganization;
 import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.InternshipPost;
 import mn.internhub.demo.data.Student;
@@ -80,13 +82,45 @@ public class ApplicationService {
         log.info("сурагч нь ажилттай өөрчилсөн байх магадлалтай: {}",application.getStatus());
     }
     //Компани нь өөр дээр нь ирсэн application хүсэлтүүдийг харах
-    public List<Application> getPendingApplications(Long userId) {
+    public List<ResponseApplicationsToOrganization> getPendingApplications(Long userId) {
         boolean isCompany = organizationRepository.existsByUserId(userId);
         if (!isCompany){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Company user doesn't found");
         }
+        //тухайн хэрэглэгчийн хариалагдах байгуулгын id-ийг авна
         Long organizationId = organizationRepository.findByUserId(userId).getOrganizationId();
+        //тэр байгуулгын id-дээр хариалагдаж буй internshipPost-уудийг бүгдийг авна буюу тухайн байгуугын оруулсан заруудыг авна
         List<InternshipPost> internshipPosts = internshipPostRepository.findAllByOrganizationId(organizationId);
-        return null;
+        //зар бүр дээр нь ажилна
+        List<ResponseApplicationsToOrganization> responseFull = internshipPosts.stream()
+                .map(post -> {
+                    //нэг зар бүр дээр ирсэн хүсэлтийг авна
+                    List<Application> eachPostsApplication = applicationRepository.findAllByInternshipPostId(post.getInternshipPostId());
+
+                    List<ResponseApplication> listResponseApplication =
+                            eachPostsApplication.stream()
+                                    .map(each -> {
+                                        Student student = studentRepository.findByUserId(each.getStudentId());
+
+                                        return ResponseApplication.builder()
+                                                .userId(student.getUserId())
+                                                .firstName(student.getFirstName())
+                                                .lastName(student.getLastName())
+                                                .major(student.getMajor())
+                                                .university(student.getUniversity())
+                                                .courseYear(student.getCourseYear())
+                                                .gpa(student.getGpa())
+                                                .build();
+                                    })
+                                    .toList();
+
+                    return ResponseApplicationsToOrganization.builder()
+                            .internshipId(post.getInternshipPostId())
+                            .title(post.getTitle())
+                            .responseApplications(listResponseApplication)
+                            .build();
+                })
+                .toList();
+        return responseFull;
     }
 }

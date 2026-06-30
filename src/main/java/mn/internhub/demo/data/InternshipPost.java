@@ -19,7 +19,7 @@ public class InternshipPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
-    private Long internshipPostID;
+    private Long internshipPostId;
     @Column(nullable = false)
     private Long organizationId;
     private String title;

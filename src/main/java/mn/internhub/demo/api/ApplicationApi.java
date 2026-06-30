@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mn.internhub.demo.api.dto.applicationApiDto.RequestApplication;
 import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationDetail;
+import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationsToOrganization;
 import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.data.enums.Status;
@@ -42,7 +43,7 @@ public class ApplicationApi {
     }
     //тухайн комтани нь өөр дээр нь ирсэн application-ний хүсэлтийг харах
     @GetMapping("/pending")
-    public List<Application> getPendingApplications(@AuthenticationPrincipal User user){
+    public List<ResponseApplicationsToOrganization> getPendingApplications(@AuthenticationPrincipal User user){
         return applicationService.getPendingApplications(user.getUserId());
     }
 }
