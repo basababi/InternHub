@@ -1,12 +1,15 @@
 package mn.internhub.demo.api;
 
 import jakarta.validation.Valid;
+import jdk.dynalink.linker.LinkerServices;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.AuthResponse;
 import mn.internhub.demo.api.dto.UpdateProfileRequest;
+import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.User;
+import mn.internhub.demo.repository.StudentRepository;
 import mn.internhub.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +18,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +27,9 @@ import org.springframework.web.server.ResponseStatusException;
 public class StudentApi {
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private StudentRepository studentRepository;
+
     //өөрийн мэдээллийн дэлгэрэнгүйг авах
     @GetMapping("/profile")
     public Student getProfile(@AuthenticationPrincipal User user){
@@ -44,6 +52,11 @@ public class StudentApi {
         return studentService.getStudentProfile(user.getUserId(), id);
     }
     //тухайн сурагч нь өөрийн явуулсан анкетүүдийн мэдээллийг авах
-//    @GetMapping("application")
-//    public
+    @GetMapping("/application")
+    public List<Application> getApplications(@AuthenticationPrincipal User user){
+        return studentService.getApplications(user);
+    }
+
+
+
 }

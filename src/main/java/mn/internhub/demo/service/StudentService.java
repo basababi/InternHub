@@ -3,15 +3,18 @@ package mn.internhub.demo.service;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.UpdateProfileRequest;
+import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.Student;
-import mn.internhub.demo.repository.OrganizationRepository;
-import mn.internhub.demo.repository.StudentRepository;
-import mn.internhub.demo.repository.TeacherRepository;
-import mn.internhub.demo.repository.UserRepository;
+import mn.internhub.demo.data.User;
+import mn.internhub.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Slf4j
 @Service
@@ -24,6 +27,8 @@ public class StudentService {
     private TeacherRepository teacherRepository;
     @Autowired
     private OrganizationRepository organizationRepository;
+    @Autowired
+    private ApplicationRepository applicationRepository;
 
     public Student updateProfile( Long id,UpdateProfileRequest updateRequest) {
         boolean userExist = userRepository.existsById(id);
@@ -84,6 +89,12 @@ public class StudentService {
         }
         log.info("Сурагчийн мэдээллийг явуулсан");
         return studentRepository.findById(id).orElseThrow(IllegalStateException::new);
-
     }
+    //тухайн сурагчийн илгээсэн бүх ажлийн хүсэлтийг харуулна
+    public List<Application> getApplications(User user){
+        Long studentId = studentRepository.findByUserId(user.getUserId()).getStudentId();
+        List<Application> applications = applicationRepository.findByStudentId(studentId);
+        return applications;
+    }
+
 }
