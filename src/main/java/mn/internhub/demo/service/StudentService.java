@@ -61,4 +61,8 @@ public class StudentService {
         log.info("сурагчийн мэдээллийг save хийсэн");
         return student;
     }
+    //сурагчийн мэдээллийг явуулах
+    public Student getProfile(Long userId) {
+        return studentRepository.findByUserId(userId);
+    }
 }

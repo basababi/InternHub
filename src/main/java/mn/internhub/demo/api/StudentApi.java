@@ -22,6 +22,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class StudentApi {
     @Autowired
     private StudentService studentService;
+    //өөрийн мэдээллийн дэлгэрэнгүйг авах
+    @GetMapping("/profile")
+    public Student getProfile(@AuthenticationPrincipal User user){
+        log.info("байгууллагын өгөгдлийг авсан");
+        return studentService.getProfile(user.getUserId());
+    }
 
 
     //өөрийн мэдээллийг дэлгэрэнгүй үүсгэх/өөрлчөх
