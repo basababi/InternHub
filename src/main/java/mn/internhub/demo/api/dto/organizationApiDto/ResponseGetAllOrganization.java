@@ -8,6 +8,7 @@ public record ResponseGetAllOrganization(
         String address,
         String city,
         String logoUrl,
-        String description
+        String description,
+        String industry
 ) {
 }
