@@ -27,5 +27,10 @@ public class ApplicationApi {
     public ResponseApplicationDetail getApplicationDetail(@AuthenticationPrincipal User user, @PathVariable Long applicationId){
         return applicationService.getApplicationDetail(applicationId);
     }
+    //
+    @PutMapping("/{id}/")
+    public void updateApplicationStatus(@AuthenticationPrincipal User user,@PathVariable Long id, @RequestBody Status status){
+        applicationService.updateApplicationStatus(id, status);
+    }
 
 }

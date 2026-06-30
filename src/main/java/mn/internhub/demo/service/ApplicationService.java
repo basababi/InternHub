@@ -1,6 +1,7 @@
 package mn.internhub.demo.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.ApplicationApi;
 import mn.internhub.demo.api.dto.RequestApplication;
 import mn.internhub.demo.api.dto.ResponseApplicationDetail;
@@ -17,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 public class ApplicationService {
     @Autowired
@@ -55,6 +57,13 @@ public class ApplicationService {
                 .createdAt(application.getSubmittedAt())
                 .build();
         return responseApplicationDetail;
+    }
+    //application id-гаар нь тухайн application-ий status-ийг өөрчилнө
+    public void updateApplicationStatus(Long id, Status status) {
+        Application application = applicationRepository.getById(id);
+        application.setStatus(status);
+        applicationRepository.save(application);
+        log.info("амжилттай болсон байх магадлалтай: {}",application.getStatus());
     }
 
 }
