@@ -3,8 +3,10 @@ package mn.internhub.demo.service;
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.organizationApiDto.RequestOwnprofileUpdate;
 import mn.internhub.demo.api.dto.organizationApiDto.ResponseGetAllOrganization;
+import mn.internhub.demo.data.OrganizationReview;
 import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.repository.OrganizationRepository;
+import mn.internhub.demo.repository.OrganizationReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -19,6 +21,9 @@ import java.util.List;
 public class OrganizationService {
     @Autowired
     private OrganizationRepository organizationRepository;
+    @Autowired
+    private OrganizationReviewRepository organizationReviewRepository;
+
     //Нийтэд ил харагдах байдлаар бүх байгуулгын мэдээллийг авах
     public List<ResponseGetAllOrganization> getAllOrganization() {
         List<Organizations> allOrganizations = organizationRepository.findAll();
@@ -69,6 +74,12 @@ public class OrganizationService {
         }
         return organizationRepository.save(organization);
     }
+    //тухайн байгуулгын сэтгэгдэл үнэлгээг харах
+    public List<OrganizationReview> getOrgReview(long id) {
+        isOrg(id);
+        Long organizationId = organizationRepository.findByUserId(id).getOrganizationId();
+        return organizationReviewRepository.findAllByOrganizationId(organizationId);
+    }
     //helper function
     public void isOrg(Long userId){
         boolean isOrg = organizationRepository.existsByUserId(userId);
@@ -76,4 +87,5 @@ public class OrganizationService {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Not acceptable");
         }
     }
+
 }

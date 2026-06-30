@@ -2,6 +2,7 @@ package mn.internhub.demo.api;
 
 import mn.internhub.demo.api.dto.organizationApiDto.RequestOwnprofileUpdate;
 import mn.internhub.demo.api.dto.organizationApiDto.ResponseGetAllOrganization;
+import mn.internhub.demo.data.OrganizationReview;
 import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.service.OrganizationService;
@@ -31,6 +32,11 @@ public class OrganizationApi {
     @PutMapping("/profile")
     public Organizations updateOrgProfile(@AuthenticationPrincipal User user, @RequestBody RequestOwnprofileUpdate request){
         return organizationService.updateOrgProfile(user.getUserId(), request);
+    }
+    //тухайн байгууллагын үнэлгээ сэтгэгдлийг авах ингэхдэ тухайн байгуулгын id-гаар нь авна
+    @GetMapping("/{id}/reviews")
+    public List<OrganizationReview> getOrgReview(@AuthenticationPrincipal User user, @PathVariable long Id){
+        return organizationService.getOrgReview(Id);
     }
 
 
