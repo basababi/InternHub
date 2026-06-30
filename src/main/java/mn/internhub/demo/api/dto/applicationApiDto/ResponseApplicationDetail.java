@@ -1,9 +1,8 @@
-package mn.internhub.demo.api.dto;
+package mn.internhub.demo.api.dto.applicationApiDto;
 
 import lombok.Builder;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

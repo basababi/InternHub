@@ -1,4 +1,4 @@
-package mn.internhub.demo.api.dto;
+package mn.internhub.demo.api.dto.studentApiDto;
 
 import java.math.BigDecimal;
 import java.util.List;

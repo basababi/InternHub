@@ -9,5 +9,5 @@ import java.io.Serializable;
 import java.util.List;
 
 public interface ApplicationRepository extends JpaRepository<Application,Long> {
-    List<Application> findByStudentId(Long studentId);
+    List<Application> findAllByStudentId(Long studentId);
 }

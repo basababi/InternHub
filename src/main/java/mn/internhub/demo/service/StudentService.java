@@ -1,8 +1,7 @@
 package mn.internhub.demo.service;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import mn.internhub.demo.api.dto.UpdateProfileRequest;
+import mn.internhub.demo.api.dto.studentApiDto.UpdateProfileRequest;
 import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.User;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Slf4j
 @Service
@@ -93,7 +90,7 @@ public class StudentService {
     //тухайн сурагчийн илгээсэн бүх ажлийн хүсэлтийг харуулна
     public List<Application> getApplications(User user){
         Long studentId = studentRepository.findByUserId(user.getUserId()).getStudentId();
-        List<Application> applications = applicationRepository.findByStudentId(studentId);
+        List<Application> applications = applicationRepository.findAllByStudentId(studentId);
         return applications;
     }
     //тухайн сурагч нь тодорхой нэг хүсэлтийг дэлгэрэнгүй харах

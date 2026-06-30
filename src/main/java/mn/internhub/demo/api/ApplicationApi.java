@@ -2,8 +2,8 @@ package mn.internhub.demo.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import mn.internhub.demo.api.dto.RequestApplication;
-import mn.internhub.demo.api.dto.ResponseApplicationDetail;
+import mn.internhub.demo.api.dto.applicationApiDto.RequestApplication;
+import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationDetail;
 import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.data.enums.Status;
@@ -11,6 +11,8 @@ import mn.internhub.demo.service.ApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,5 +39,10 @@ public class ApplicationApi {
     @PutMapping("/{id}/withdraw")
     public void updateApplicationStatusByStudent(@AuthenticationPrincipal User user,  @PathVariable Long id){
         applicationService.updateApplicationStatusByStudent(id);
+    }
+    //тухайн комтани нь өөр дээр нь ирсэн application-ний хүсэлтийг харах
+    @GetMapping("/pending")
+    public List<Application> getPendingApplications(@AuthenticationPrincipal User user){
+        return applicationService.getPendingApplications(user.getUserId());
     }
 }

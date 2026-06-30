@@ -3,7 +3,7 @@ package mn.internhub.demo.api;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mn.internhub.demo.api.dto.*;
+import mn.internhub.demo.api.dto.authApiDto.*;
 import mn.internhub.demo.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

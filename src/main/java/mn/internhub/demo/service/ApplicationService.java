@@ -1,15 +1,16 @@
 package mn.internhub.demo.service;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mn.internhub.demo.api.ApplicationApi;
-import mn.internhub.demo.api.dto.RequestApplication;
-import mn.internhub.demo.api.dto.ResponseApplicationDetail;
+import mn.internhub.demo.api.dto.applicationApiDto.RequestApplication;
+import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationDetail;
 import mn.internhub.demo.data.Application;
+import mn.internhub.demo.data.InternshipPost;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.enums.PaymentStatus;
 import mn.internhub.demo.data.enums.Status;
 import mn.internhub.demo.repository.ApplicationRepository;
+import mn.internhub.demo.repository.InternshipPostRepository;
+import mn.internhub.demo.repository.OrganizationRepository;
 import mn.internhub.demo.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -25,6 +27,11 @@ public class ApplicationService {
     private ApplicationRepository applicationRepository;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private OrganizationRepository organizationRepository;
+    @Autowired
+    private InternshipPostRepository internshipPostRepository;
+
 
     //application хүсэлт үүсгэнэ post
     public Application createApplication(RequestApplication request) {
@@ -71,5 +78,15 @@ public class ApplicationService {
         application.setStatus(Status.WITHDRAWN);
         applicationRepository.save(application);
         log.info("сурагч нь ажилттай өөрчилсөн байх магадлалтай: {}",application.getStatus());
+    }
+    //Компани нь өөр дээр нь ирсэн application хүсэлтүүдийг харах
+    public List<Application> getPendingApplications(Long userId) {
+        boolean isCompany = organizationRepository.existsByUserId(userId);
+        if (!isCompany){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Company user doesn't found");
+        }
+        Long organizationId = organizationRepository.findByUserId(userId).getOrganizationId();
+        List<InternshipPost> internshipPosts = internshipPostRepository.findAllByOrganizationId(organizationId);
+        return null;
     }
 }

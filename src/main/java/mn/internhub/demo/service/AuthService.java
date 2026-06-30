@@ -3,24 +3,22 @@ package mn.internhub.demo.service;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mn.internhub.demo.api.dto.*;
+import mn.internhub.demo.api.dto.authApiDto.RegisterOrganizationRequest;
+import mn.internhub.demo.api.dto.authApiDto.*;
 import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.Teacher;
 import mn.internhub.demo.data.User;
-import mn.internhub.demo.data.enums.Role;
 import mn.internhub.demo.repository.OrganizationRepository;
 import mn.internhub.demo.repository.StudentRepository;
 import mn.internhub.demo.repository.TeacherRepository;
 import mn.internhub.demo.repository.UserRepository;
 import mn.internhub.demo.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 

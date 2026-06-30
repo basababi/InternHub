@@ -1,4 +1,4 @@
-package mn.internhub.demo.api.dto;
+package mn.internhub.demo.api.dto.applicationApiDto;
 
 import jakarta.validation.constraints.NotBlank;
 
