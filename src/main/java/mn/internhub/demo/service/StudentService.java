@@ -96,5 +96,8 @@ public class StudentService {
         List<Application> applications = applicationRepository.findByStudentId(studentId);
         return applications;
     }
-
+    //тухайн сурагч нь тодорхой нэг хүсэлтийг дэлгэрэнгүй харах
+    public Application getApplicationDetail(Long applicationId) {
+        return applicationRepository.findById(applicationId).orElseThrow(IllegalStateException::newd);
+    }
 }

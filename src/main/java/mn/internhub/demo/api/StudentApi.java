@@ -56,7 +56,11 @@ public class StudentApi {
     public List<Application> getApplications(@AuthenticationPrincipal User user){
         return studentService.getApplications(user);
     }
-
+    //туханй сурагч нь өөрийн явуулсан хүсэлтийг дэлгэрэнгүйг харах
+    @GetMapping("/application/{id}")
+    public Application getApplicationDetail(@AuthenticationPrincipal User user,@PathVariable Long applicationId){
+        return studentService.getApplicationDetail(applicationId);
+    }
 
 
 }
