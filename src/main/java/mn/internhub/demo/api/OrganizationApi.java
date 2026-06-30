@@ -1,14 +1,13 @@
 package mn.internhub.demo.api;
 
+import mn.internhub.demo.api.dto.organizationApiDto.RequestOwnprofileUpdate;
 import mn.internhub.demo.api.dto.organizationApiDto.ResponseGetAllOrganization;
 import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +26,11 @@ public class OrganizationApi {
     @GetMapping("/profile")
     public Organizations getOrgProfile(@AuthenticationPrincipal User user){
         return organizationService.getOrgProfile(user.getUserId());
+    }
+    //өөрийн мэдээллийг өөрчлөх
+    @PutMapping("/profile")
+    public Organizations updateOrgProfile(@AuthenticationPrincipal User user, @RequestBody RequestOwnprofileUpdate request){
+        return organizationService.updateOrgProfile(user.getUserId(), request);
     }
 
 
