@@ -2,6 +2,8 @@ package mn.internhub.demo.data;
 
 import jakarta.persistence.*;
 import lombok.*;
+import mn.internhub.demo.data.enums.EvaluationStatus;
+import mn.internhub.demo.data.enums.Status;
 
 import java.time.LocalDate;
 
@@ -27,4 +29,5 @@ public class Evaluation {
     private String comment;
     private LocalDate createdAt;
     private LocalDate updatedAt;
+    private EvaluationStatus status;
 }

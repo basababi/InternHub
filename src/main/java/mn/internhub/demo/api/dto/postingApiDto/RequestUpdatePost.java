@@ -1,5 +1,7 @@
 package mn.internhub.demo.api.dto.postingApiDto;
 
+import mn.internhub.demo.data.enums.PostStatus;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,6 +14,7 @@ public record RequestUpdatePost(
         Integer salaryMin,
         Integer salaryMax,
         Integer vacancyCount,
-        LocalDateTime deadline
+        LocalDateTime deadline,
+        PostStatus status
 ) {
 }

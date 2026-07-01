@@ -9,11 +9,13 @@ import mn.internhub.demo.api.dto.postingApiDto.ResponsePubPosts;
 import mn.internhub.demo.data.InternshipPost;
 import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.PostViews;
+import mn.internhub.demo.data.enums.PostStatus;
 import mn.internhub.demo.data.enums.Status;
 import mn.internhub.demo.repository.InternshipPostRepository;
 import mn.internhub.demo.repository.OrganizationRepository;
 import mn.internhub.demo.repository.StudentRepository;
 import mn.internhub.demo.repository.UserRepository;
+import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,8 @@ public class PostingService {
     private UserRepository userRepository;
     @Autowired
     private PostViewsRepository postViewsRepository;
+    @Autowired
+    private isItExist isItExist;
 
     //олон нийт оруулсан байгаа бүх зарыг харах
     public List<ResponsePubPosts> getInternshipPosts() {
@@ -54,6 +58,7 @@ public class PostingService {
                             .salaryMax(post.getSalaryMax())
                             .requiredMajor(post.getRequiredMajors())
                             .viewCount(postView.getViewCount())
+                            .status(post.getStatus())
                             .createdAt(post.getCreatedAt())
                             .updatedAt(post.getUpdatedAt())
                             .build();
@@ -80,7 +85,7 @@ public class PostingService {
     }
     //байгууллаг нь зар оруулах
     public InternshipPost createPost(Long userId, @Valid RequestCreatePost request) {
-        isOrg(userId);
+        isItExist.isOrgByUserId(userId);
         log.info("хэрэглэгчээ шалгаад алдаагүй ");
         Long orgId = organizationRepository.findByUserId(userId).getOrganizationId();
         log.info("тухайн хэрэглэгчийн байгууллагын id авсан");
@@ -96,7 +101,7 @@ public class PostingService {
                 .isSalaryUnspecified(request.isSalaryUnspecified())
                 .vacancyCount(request.vacancyCount())
                 .deadline(request.deadline())
-                .status(Status.PENDING)
+                .status(PostStatus.OPEN)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -115,7 +120,7 @@ public class PostingService {
     }
     //байгууллага нь өөрийн оруулсан зарыг өөрчлөх
     public InternshipPost updatePost(Long userId, @Valid Long postId, @Valid RequestUpdatePost request) {
-        isOrg(userId);
+        isItExist.isOrgByUserId(userId);
         boolean isExistPost = internshipPostRepository.existsById(postId);
         if (!isExistPost){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"post doesn't found");
@@ -149,13 +154,16 @@ public class PostingService {
         if (request.deadline() != null){
             post.setDeadline(request.deadline());
         }
+        if (request.status() != null){
+            post.setStatus(request.status());
+        }
         post.setUpdatedAt(LocalDateTime.now());
         internshipPostRepository.save(post);
         return post;
     }
     //байгууллаг нь өөрийн оруулсан зараа устгах
     public void deletePost(Long userId, Long postId) {
-        isOrg(userId);
+        isItExist.isOrgByUserId(userId);
         boolean isExistPost = internshipPostRepository.existsById(postId);
         if (!isExistPost){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"post doesn't found");
@@ -169,15 +177,8 @@ public class PostingService {
     }
     //өөрийн хийсэн заруудаа харах
     public List<InternshipPost> getMyPosts(Long userId) {
-        isOrg(userId);
+        isItExist.isOrgByUserId(userId);
         Long orgId = organizationRepository.findByUserId(userId).getOrganizationId();
         return internshipPostRepository.findAllByOrganizationId(orgId);
-    }
-    //Helper function
-    public void isOrg(Long userId){
-        boolean isOrg = organizationRepository.existsByUserId(userId);
-        if(!isOrg){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Not acceptable");
-        }
     }
 }

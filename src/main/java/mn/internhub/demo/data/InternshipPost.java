@@ -2,6 +2,7 @@ package mn.internhub.demo.data;
 
 import jakarta.persistence.*;
 import lombok.*;
+import mn.internhub.demo.data.enums.PostStatus;
 import mn.internhub.demo.data.enums.Status;
 
 import java.math.BigDecimal;
@@ -32,7 +33,7 @@ public class InternshipPost {
     private boolean isSalaryUnspecified;
     private Integer vacancyCount;
     private LocalDateTime deadline;
-    private Status status;
+    private PostStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
