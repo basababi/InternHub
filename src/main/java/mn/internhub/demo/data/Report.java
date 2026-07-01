@@ -13,15 +13,15 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "reports")
+@Builder
 public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
     private Long reportId;
-    private Long applicaitonId;
     private Long teacherId;
 
-    private Long StudentID;
+    private Long studentId;
     private String title;
     private Status status;
     private String teacherComment;
