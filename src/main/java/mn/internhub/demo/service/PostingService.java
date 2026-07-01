@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.postingApiDto.RequestCreatePost;
+import mn.internhub.demo.api.dto.postingApiDto.RequestUpdatePost;
 import mn.internhub.demo.api.dto.postingApiDto.ResponsePubPosts;
 import mn.internhub.demo.data.InternshipPost;
 import mn.internhub.demo.data.Organizations;
@@ -112,6 +113,66 @@ public class PostingService {
         log.info("postView-оо амжилттай хадгаллаа");
         return createpost;
     }
+    //байгууллага нь өөрийн оруулсан зарыг өөрчлөх
+    public InternshipPost updatePost(Long userId, @Valid Long postId, @Valid RequestUpdatePost request) {
+        isOrg(userId);
+        boolean isExistPost = internshipPostRepository.existsById(postId);
+        if (!isExistPost){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"post doesn't found");
+        }
+        Long orgId = organizationRepository.findByUserId(userId).getOrganizationId();
+        InternshipPost post = internshipPostRepository.findById(postId).orElseThrow(IllegalStateException::new);
+        if (post.getOrganizationId() != orgId){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"bad request");
+        }
+        if (request.description() != null){
+            post.setDescription(request.description());
+        }
+        if (request.requiredMajors() != null){
+            post.setRequiredMajors(request.requiredMajors());
+        }
+        if (request.minGpa() != null){
+            post.setMinGpa(request.minGpa());
+        }
+        if (request.requiredSkills() != null){
+            post.setRequiredSkills(request.requiredSkills());
+        }
+        if (request.salaryMin() != null){
+            post.setSalaryMin(request.salaryMin());
+        }
+        if (request.salaryMax() != null){
+            post.setSalaryMax(request.salaryMax());
+        }
+        if (request.vacancyCount() != null){
+            post.setVacancyCount(request.vacancyCount());
+        }
+        if (request.deadline() != null){
+            post.setDeadline(request.deadline());
+        }
+        post.setUpdatedAt(LocalDateTime.now());
+        internshipPostRepository.save(post);
+        return post;
+    }
+    //байгууллаг нь өөрийн оруулсан зараа устгах
+    public void deletePost(Long userId, Long postId) {
+        isOrg(userId);
+        boolean isExistPost = internshipPostRepository.existsById(postId);
+        if (!isExistPost){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"post doesn't found");
+        }
+        Long orgId = organizationRepository.findByUserId(userId).getOrganizationId();
+        InternshipPost post = internshipPostRepository.findById(postId).orElseThrow(IllegalStateException::new);
+        if (post.getOrganizationId() != orgId){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"bad request");
+        }
+        internshipPostRepository.deleteById(postId);
+    }
+    //өөрийн хийсэн заруудаа харах
+    public List<InternshipPost> getMyPosts(Long userId) {
+        isOrg(userId);
+        Long orgId = organizationRepository.findByUserId(userId).getOrganizationId();
+        return internshipPostRepository.findAllByOrganizationId(orgId);
+    }
     //Helper function
     public void isOrg(Long userId){
         boolean isOrg = organizationRepository.existsByUserId(userId);
@@ -119,6 +180,4 @@ public class PostingService {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Not acceptable");
         }
     }
-
-
 }
