@@ -64,7 +64,10 @@ public class PostingService {
         if (!postExist){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"post doesn't found");
         }
-
+        PostViews postViews = postViewsRepository.findByInternshipPostId(postId);
+        Integer viewCount = postViews.getViewCount()+1;
+        postViews.setViewCount(viewCount);
+        postViewsRepository.save(postViews);
         return internshipPostRepository.findById(postId).orElseThrow(IllegalAccessError::new);
     }
     //байгууллаг нь зар оруулах
