@@ -3,6 +3,7 @@ package mn.internhub.demo.service;
 import mn.internhub.demo.api.dto.postingApiDto.ResponsePubPosts;
 import mn.internhub.demo.data.InternshipPost;
 import mn.internhub.demo.data.Organizations;
+import mn.internhub.demo.data.PostViews;
 import mn.internhub.demo.repository.InternshipPostRepository;
 import mn.internhub.demo.repository.OrganizationRepository;
 import mn.internhub.demo.repository.StudentRepository;
@@ -24,12 +25,16 @@ public class PostingApiService {
     private StudentRepository studentRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PostViewsRepository postViewsRepository;
+
     //олон нийт оруулсан байгаа бүх зарыг харах
     public List<ResponsePubPosts> getInternshipPosts() {
         List<InternshipPost> posts = internshipPostRepository.findAll();
         return posts.stream()
                 .map(post ->{
                     Organizations org = organizationRepository.findById(post.getOrganizationId()).orElseThrow(IllegalStateException::new);
+                    PostViews postView = postViewsRepository.findByInternshipPostId(post.getInternshipPostId());
                     return ResponsePubPosts.builder()
                             .internshipPostId(post.getInternshipPostId())
                             .organizationId(post.getOrganizationId())
@@ -40,6 +45,7 @@ public class PostingApiService {
                             .salaryMin(post.getSalaryMin())
                             .salaryMax(post.getSalaryMax())
                             .requiredMajor(post.getRequiredMajors())
+                            .viewCount(postView.getViewCount())
                             .build();
                 })
                 .toList();

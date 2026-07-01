@@ -15,7 +15,8 @@ public record ResponsePubPosts(
         String city,
         Integer salaryMin,
         Integer salaryMax,
-        List<String> requiredMajor
+        List<String> requiredMajor,g
+        Integer viewCount
 
 ) {
 }

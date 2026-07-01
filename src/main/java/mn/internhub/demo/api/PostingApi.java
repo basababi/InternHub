@@ -24,6 +24,7 @@ public class PostingApi {
     public InternshipPost getInternshipPostDetail(@PathVariable Long postId){
         return postingApiService.getInternshipPostDetail(postId);
     }
+    
 
 
 }
