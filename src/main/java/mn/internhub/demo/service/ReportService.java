@@ -2,6 +2,7 @@ package mn.internhub.demo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.reportApiDto.RequestCreateReport;
+import mn.internhub.demo.api.dto.reportApiDto.RequestReviewReport;
 import mn.internhub.demo.api.dto.reportApiDto.RequestUpdateReport;
 import mn.internhub.demo.data.Report;
 import mn.internhub.demo.data.enums.Status;
@@ -33,10 +34,11 @@ public class ReportService {
     //сурагч нь тайлангаа багшруу явуулах
     public Report createReport(Long userId, RequestCreateReport request) {
         boolean isUserExist = studentRepository.existsByUserId(userId);
-        Long studentId = studentRepository.findByUserId(userId).getStudentId();
         if (!isUserExist){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Student doesn't found");
         }
+        isStudentExists(userId);
+        Long studentId = studentRepository.findByUserId(userId).getStudentId();
         Report report = Report.builder()
                 .teacherId(request.teacherId())
                 .studentId(studentId)
@@ -86,7 +88,22 @@ public class ReportService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"not found");
         }
         Long teacherId = teacherRepository.findByUserId(userId).getTeacherId();
-        return reportRepository.findAllByTeacherId(teacherId);
+        return reportRepository.findAllByTeacherIdAndStatus(teacherId,Status.PENDING);
+    }
+    //багш нь тайланг үзсэний дараагаар тайлбар гэх мэт зүйл оруулна
+    public Report reviewReport(Long userId,long reportId, RequestReviewReport request) {
+        boolean isTeacherExist = teacherRepository.existsByUserId(userId);
+        if (!isTeacherExist){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"not found");
+        }
+        boolean isReportExist = reportRepository.existsById(reportId);
+        if (!isReportExist){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Report doesn't found");
+        }
+        Report report = reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new);
+        report.setTeacherComment(request.teacherComment());
+        reportRepository.save(report);
+        return report;
     }
 
     //helper function
@@ -96,6 +113,5 @@ public class ReportService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Not found");
         }
     }
-
 
 }

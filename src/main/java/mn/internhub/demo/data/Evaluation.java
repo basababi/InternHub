@@ -19,9 +19,12 @@ public class Evaluation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false,unique = true)
     private Long evaluationId;
+
+    private Long organizationId;
+    private Long studentId;
     private Long applicationId;
     private Integer score;
-    private Integer performance;
     private String comment;
     private LocalDate createdAt;
+    private LocalDate updatedAt;
 }

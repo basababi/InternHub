@@ -2,6 +2,7 @@ package mn.internhub.demo.api;
 
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.reportApiDto.RequestCreateReport;
+import mn.internhub.demo.api.dto.reportApiDto.RequestReviewReport;
 import mn.internhub.demo.api.dto.reportApiDto.RequestUpdateReport;
 import mn.internhub.demo.data.Report;
 import mn.internhub.demo.data.User;
@@ -44,5 +45,9 @@ public class ReportApi {
     public List<Report> getPendingReports(@AuthenticationPrincipal User user){
         return reportService.getPendingReports(user.getUserId());
     }
-
+    //багш нь тайланг үзсэний дараагаар тайлбар гэх мэт зүйл оруулна
+    @PutMapping("/{reportId}/review")
+    public Report reviewReports(@AuthenticationPrincipal User user,@PathVariable Long reportId ,@RequestBody RequestReviewReport request){
+        return reportService.reviewReport(user.getUserId(), reportId,request);
+    }
 }
