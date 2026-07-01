@@ -41,6 +41,11 @@ public class OrganizationService {
                 .toList();
         return publicAllOrganization;
     }
+    //тодорхой нэг байгууллагын дэлгэрэнгүй мэдээллийг харах
+    public Organizations getOrganizationById(Long orgId) {
+        isOrg(orgId);
+        return organizationRepository.findById(orgId).orElseThrow(IllegalAccessError::new);
+    }
     //өөрийн мэдээллээ харах
     public Organizations getOrgProfile(Long userId) {
         isOrg(userId);
@@ -87,5 +92,6 @@ public class OrganizationService {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Not acceptable");
         }
     }
+
 
 }

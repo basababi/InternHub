@@ -23,6 +23,11 @@ public class OrganizationApi {
     public List<ResponseGetAllOrganization> getAllOrganization(){
         return organizationService.getAllOrganization();
     }
+
+    @GetMapping("/{orgId}")
+    public Organizations getOrganizationById(@PathVariable Long orgId){
+        return organizationService.getOrganizationById(orgId);
+    }
     //тухайн байгууллаг нь өөрийн мэдээллээ/профайлыг харах
     @GetMapping("/profile")
     public Organizations getOrgProfile(@AuthenticationPrincipal User user){
