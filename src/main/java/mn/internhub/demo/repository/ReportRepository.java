@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ReportRepository extends JpaRepository<Report, Long> {
     List<Report> findAllByStudentId(Long studentId);
+    List<Report> findAllByTeacherId(Long teacherId);
 }
