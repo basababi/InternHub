@@ -1,11 +1,12 @@
-package mn.internhub.demo.api.dto;
+package mn.internhub.demo.api;
 
+import mn.internhub.demo.api.dto.postingApiDto.ResponsePubPosts;
 import mn.internhub.demo.data.InternshipPost;
-import mn.internhub.demo.data.User;
 import mn.internhub.demo.service.PostingApiService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/postings")
@@ -15,14 +16,13 @@ public class PostingApi {
 
     //дадлагын ажилын заруудийг авах
     @GetMapping
-    public InternshipPost getInternshipPosts(){
+    public List<ResponsePubPosts> getInternshipPosts(){
         return postingApiService.getInternshipPosts();
     }
     //тухайн нэг зарын дэлгэрэнгүйг харх/авах
     @GetMapping("/{id}")
     public InternshipPost getInternshipPostDetail(@PathVariable Long postId){
         return postingApiService.getInternshipPostDetail(postId);
-
     }
 
 
