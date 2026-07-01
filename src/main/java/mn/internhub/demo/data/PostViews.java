@@ -20,8 +20,6 @@ public class PostViews {
     private Long viewId;
     @Column(nullable = false,unique = true)
     private Long internshipPostId;
-    @Column(nullable = false,unique = true)
-    private Long userId;
     private Integer viewCount;
     private LocalDateTime createdAt;
 }
