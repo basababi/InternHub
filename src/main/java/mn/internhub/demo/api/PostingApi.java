@@ -28,6 +28,7 @@ public class PostingApi {
     //тухайн нэг зарын дэлгэрэнгүйг харх/авах
     @GetMapping("/{postId}")
     public InternshipPost getInternshipPostDetail(@PathVariable Long postId){
+        log.info("мэдээлэлээ амжилттай авсан");
         return postingService.getInternshipPostDetail(postId);
     }
     //байгууллаг нь зар оруулах
@@ -36,6 +37,7 @@ public class PostingApi {
         log.info("мэдээлэлээ амжилттай авсан");
         return postingService.createPost(user.getUserId(),request);
     }
+    //байгууллаг нь оруулсан зараа өөрчилж шинчлэлт оруулах
 
 
 }

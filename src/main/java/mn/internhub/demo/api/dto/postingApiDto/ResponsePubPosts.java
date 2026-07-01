@@ -3,6 +3,7 @@ package mn.internhub.demo.api.dto.postingApiDto;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -16,7 +17,9 @@ public record ResponsePubPosts(
         Integer salaryMin,
         Integer salaryMax,
         List<String> requiredMajor,
-        Integer viewCount
+        Integer viewCount,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 
 ) {
 }

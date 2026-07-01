@@ -20,7 +20,7 @@ public class InternshipPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
     private Long internshipPostId;
-    @Column(nullable = false)
+
     private Long organizationId;
     private String title;
     private String description;
@@ -34,4 +34,5 @@ public class InternshipPost {
     private LocalDateTime deadline;
     private Status status;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

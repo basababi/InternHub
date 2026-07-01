@@ -53,6 +53,8 @@ public class PostingService {
                             .salaryMax(post.getSalaryMax())
                             .requiredMajor(post.getRequiredMajors())
                             .viewCount(postView.getViewCount())
+                            .createdAt(post.getCreatedAt())
+                            .updatedAt(post.getUpdatedAt())
                             .build();
                 })
                 .toList();
@@ -64,10 +66,15 @@ public class PostingService {
         if (!postExist){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"post doesn't found");
         }
+        log.info("post шалгасан байна");
         PostViews postViews = postViewsRepository.findByInternshipPostId(postId);
+        log.info("postID гаар нь үзэлтйг нь авсан");
         Integer viewCount = postViews.getViewCount()+1;
+        log.info("Нэмсэн");
         postViews.setViewCount(viewCount);
+        log.info("Хадгалсан");
         postViewsRepository.save(postViews);
+
         return internshipPostRepository.findById(postId).orElseThrow(IllegalAccessError::new);
     }
     //байгууллаг нь зар оруулах
@@ -90,17 +97,19 @@ public class PostingService {
                 .deadline(request.deadline())
                 .status(Status.PENDING)
                 .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
         log.info("post-оо амжилттай үүсгэсэн");
         internshipPostRepository.save(createpost);
+        log.info("post-оо амжилттай хадгаллаа");
         PostViews postViews = PostViews.builder()
                 .internshipPostId(createpost.getInternshipPostId())
                 .viewCount(0)
                 .createdAt(LocalDateTime.now())
                 .build();
+        log.info("postView-оо амжилттай үүсгэсэн");
         postViewsRepository.save(postViews);
-
-        log.info("post-оо амжилттай хадгалсан");
+        log.info("postView-оо амжилттай хадгаллаа");
         return createpost;
     }
     //Helper function

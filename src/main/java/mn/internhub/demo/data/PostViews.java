@@ -18,7 +18,6 @@ public class PostViews {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
     private Long viewId;
-    @Column(nullable = false,unique = true)
     private Long internshipPostId;
     private Integer viewCount;
     private LocalDateTime createdAt;
