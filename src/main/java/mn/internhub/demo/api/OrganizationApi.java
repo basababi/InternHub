@@ -23,7 +23,7 @@ public class OrganizationApi {
     public List<ResponseGetAllOrganization> getAllOrganization(){
         return organizationService.getAllOrganization();
     }
-
+    //Тухайн байгууллагын мэдээллийг дэлгэрэнгүй харах
     @GetMapping("/{orgId}")
     public Organizations getOrganizationById(@PathVariable Long orgId){
         return organizationService.getOrganizationById(orgId);
@@ -48,7 +48,4 @@ public class OrganizationApi {
     public Long getAllOrgNum(){
         return organizationService.getAllOrgNxum();
     }
-
-
-
 }

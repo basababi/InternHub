@@ -1,12 +1,17 @@
 package mn.internhub.demo.api.dto.adminApi;
 
 import lombok.Builder;
+import mn.internhub.demo.data.enums.Status;
+import mn.internhub.demo.data.enums.UserStatus;
 
 import java.math.BigDecimal;
+import java.sql.Statement;
 import java.util.List;
 
 @Builder
 public record ResponseUserDetail(
+
+        UserStatus status,
         // Student
         Long studentId,
         String firstName,

@@ -1,15 +1,14 @@
 package mn.internhub.demo.api;
 
+import mn.internhub.demo.api.dto.adminApi.RequestUpdate;
 import mn.internhub.demo.api.dto.adminApi.ResponseUserDetail;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.User;
+import mn.internhub.demo.data.enums.UserStatus;
 import mn.internhub.demo.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,5 +27,11 @@ public class AdminApi {
     public ResponseUserDetail getStudentDetailById(@AuthenticationPrincipal User user, @PathVariable Long userId){
         return adminService.getAllUsersDetailById(user.getUserId(), userId);
     }
+    //хэрэглэгчдийн status-ийг өөрчилөх
+    @PutMapping("/users/{userId}/status")
+    public UserStatus updateUserStatus(@AuthenticationPrincipal User admin, @PathVariable Long userId, @RequestBody RequestUpdate request){
+        return adminService.updateUserStatus(admin.getUserId(), userId, request);
+    }
+
 
 }

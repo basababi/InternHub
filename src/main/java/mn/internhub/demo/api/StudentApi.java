@@ -6,7 +6,6 @@ import mn.internhub.demo.api.dto.studentApiDto.UpdateProfileRequest;
 import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.User;
-import mn.internhub.demo.repository.StudentRepository;
 import mn.internhub.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,9 +22,6 @@ import java.util.List;
 public class StudentApi {
     @Autowired
     private StudentService studentService;
-    @Autowired
-    private StudentRepository studentRepository;
-
     //өөрийн мэдээллийн дэлгэрэнгүйг авах
     @GetMapping("/profile")
     public Student getProfile(@AuthenticationPrincipal User user){
@@ -35,11 +31,9 @@ public class StudentApi {
     //өөрийн мэдээллийг дэлгэрэнгүй үүсгэх/өөрлчөх
     @PutMapping("/profile")
     public Student updateProfile(@AuthenticationPrincipal User user, @RequestBody UpdateProfileRequest updateRequest){
-        log.info("энэ хүртэл ирлээ");
         if (updateRequest == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"null");
         }
-        log.info("ямартай ч зөв хүслэт авсан");
         return studentService.updateProfile(user.getUserId(), updateRequest);
     }
     //сурагчийн мэдээллийг багш, ажил олгогч нь дэлгэрэнгүй харах ингэхдээ тухайн сурагчийн student_id нь авах байдлаар
@@ -54,8 +48,8 @@ public class StudentApi {
     }
     //туханй сурагч нь өөрийн явуулсан хүсэлтийг дэлгэрэнгүйг харах
     @GetMapping("/application/{id}")
-    public Application getApplicationDetail(@AuthenticationPrincipal User user,@PathVariable Long applicationId){
-        return studentService.getApplicationDetail(applicationId);
+    public Application getApplicationDetail(@AuthenticationPrincipal User user,@PathVariable Long id){
+        return studentService.getApplicationDetail(id);
     }
     //Бүртгэлтэй буй нийт сурагчийн тоо
     @GetMapping("/All")

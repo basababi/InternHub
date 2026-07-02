@@ -27,7 +27,6 @@ public class ReportApi {
     //сурагч нь өөрийн явуулсан тайлангаа харах
     @GetMapping
     public List<Report> getStudentReports(@AuthenticationPrincipal User user){
-        log.info("мэдээлэл авсан");
         return reportService.getStudentReport(user.getUserId());
     }
     //тайланг id-гаар нь авах
