@@ -35,6 +35,11 @@ public class AuthApi {
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterOrganizationRequest request) {
         log.info("байгууллагын өгөгдлийг авсан");
         return ResponseEntity.ok(authService.registerOrganization(request));
+    }
+    //админ бүртгэх
+    @PostMapping("/register/admin")
+    public ResponseEntity<AuthResponse> registerAdmin(@Valid @RequestBody RegisterAdminRequest request){
+        return ResponseEntity.ok(authService.registerAdmin(request));
 
     }
     //хэрэглэгч нэвтрэх

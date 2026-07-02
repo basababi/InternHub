@@ -83,4 +83,18 @@ public class OrganizationReviewService {
         organizationReviewRepository.save(updated);
         return updated;
     }
+    //сурагч нь үнэлсэн үнэлгээгээ устгах
+    public void deleteReview(Long userId, Long revId) {
+        isItExist.isStudentByUserId(userId);
+        boolean isExistReview = organizationReviewRepository.existsById(revId);
+        if (!isExistReview){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"олдсонгүй");
+        }
+        Long studentId = gimmeId.userIdToStudentId(userId);
+        OrganizationReview review = organizationReviewRepository.findById(revId).orElseThrow(IllegalAccessError::new);
+        if (review.getOrganizationReviewId().equals(studentId)){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"хэрэглэгчийн эрх хүрэхгүй байна");
+        }
+        organizationReviewRepository.deleteById(revId);
+    }
 }

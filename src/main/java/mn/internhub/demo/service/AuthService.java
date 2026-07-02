@@ -5,14 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.authApiDto.RegisterOrganizationRequest;
 import mn.internhub.demo.api.dto.authApiDto.*;
-import mn.internhub.demo.data.Organizations;
-import mn.internhub.demo.data.Student;
-import mn.internhub.demo.data.Teacher;
-import mn.internhub.demo.data.User;
-import mn.internhub.demo.repository.OrganizationRepository;
-import mn.internhub.demo.repository.StudentRepository;
-import mn.internhub.demo.repository.TeacherRepository;
-import mn.internhub.demo.repository.UserRepository;
+import mn.internhub.demo.data.*;
+import mn.internhub.demo.repository.*;
 import mn.internhub.demo.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +31,8 @@ public class AuthService {
     private TeacherRepository teacherRepository;
     @Autowired
     private OrganizationRepository organizationRepository;
+    @Autowired
+    private AdminRepository adminRepository;
 
     public AuthResponse registerStudent(@Valid RegisterStudentRequest request) {
         User user = baseRegister(request.baseRequest());
@@ -50,8 +46,7 @@ public class AuthService {
         String token = jwtService.generateToken(user);
         return new AuthResponse(token);
     }
-
-
+    //багш бүртгүүлэх
     public AuthResponse registerTeacher(@Valid RegisterTeacherRequest request) {
         log.info("Энэ хүртэл бол ямар ч асуудалгүй явлаа");
         User user = baseRegister(request.baseRequest());
@@ -64,7 +59,18 @@ public class AuthService {
         String token = jwtService.generateToken(user);
         return new AuthResponse(token);
     }
-
+    //admin бүртгүүлэх
+    public AuthResponse registerAdmin(@Valid RegisterAdminRequest request) {
+        User user = baseRegister(request.baseRequest());
+        Admin admin = Admin.builder()
+                .userId(user.getUserId())
+                .adminName(request.adminName())
+                .build();
+        adminRepository.save(admin);
+        String token = jwtService.generateToken(user);
+        return new AuthResponse(token);
+    }
+    //байгуллаг бүртгүүлэх
     public AuthResponse registerOrganization(@Valid RegisterOrganizationRequest request) {
         User user = baseRegister(request.baseRequest());
         Organizations organizations = Organizations.builder()
@@ -101,4 +107,6 @@ public class AuthService {
         String token = jwtService.generateToken(user);
         return new AuthResponse(token);
     }
+
+
 }

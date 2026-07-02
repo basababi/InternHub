@@ -33,6 +33,12 @@ public class OrganizationReviewApi {
     public OrganizationReview updateReview(@AuthenticationPrincipal User user, @PathVariable Long revId, RequestUpdateReview request){
         return organizationReviewService.updateReview(user.getUserId(), revId,request);
     }
+    //сурагч нь үнэлсэн үнэлгээгээ устгах
+    @DeleteMapping("/{revId}")
+    public void deleteReview(@AuthenticationPrincipal User user, @PathVariable Long revId){
+        organizationReviewService.deleteReview(user.getUserId(), revId);
+
+    }
 
 
 
