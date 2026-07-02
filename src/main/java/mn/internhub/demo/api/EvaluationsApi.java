@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/evaluations")
-public class evaluationsApi {
+public class EvaluationsApi {
     @Autowired
     private EvaluationService evaluationService;
 
@@ -35,7 +35,7 @@ public class evaluationsApi {
         return evaluationService.updateEvaluation(user.getUserId(),evaId,request);
     }
     //сурагч болон багш нь үнэлгээг нь дэлгэрэнгүй харах
-    @GetMapping("student/{evaId}")
+    @GetMapping("/student/{evaId}")
     public Evaluation getEvaluationById(@AuthenticationPrincipal User user, @PathVariable Long evaId){
         return evaluationService.getEvaluationById(user.getUserId(), evaId);
     }

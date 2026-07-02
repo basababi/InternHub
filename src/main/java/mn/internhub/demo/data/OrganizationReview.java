@@ -19,10 +19,11 @@ public class OrganizationReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false,unique = true)
     private Long organizationReviewId;
+    private String studentName;
     private Long organizationId;
     private Long studentId;
-    private Long applicationId;
-    private BigDecimal rating;
+    private Float rating;
     private String comment;
+    private boolean isAnonymous;
     private LocalDate createdAt;
 }
