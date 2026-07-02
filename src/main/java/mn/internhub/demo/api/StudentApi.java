@@ -57,6 +57,11 @@ public class StudentApi {
     public Application getApplicationDetail(@AuthenticationPrincipal User user,@PathVariable Long applicationId){
         return studentService.getApplicationDetail(applicationId);
     }
+    //Бүртгэлтэй буй нийт сурагчийн тоо
+    @GetMapping("/All")
+    public long getAllStudentNum(){
+        return studentService.getAllStudentNum();
+    }
 
 
 }

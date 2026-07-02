@@ -97,4 +97,9 @@ public class StudentService {
     public Application getApplicationDetail(Long applicationId) {
         return applicationRepository.findById(applicationId).orElseThrow(IllegalStateException::new);
     }
+
+    //Бүртгэлтэй буй нийт сурагчийн тоо
+    public long getAllStudentNum() {
+        return studentRepository.count();
+    }
 }
