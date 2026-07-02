@@ -58,6 +58,11 @@ public class PostingApi {
     public List<InternshipPost> getMyPosts(@AuthenticationPrincipal User user){
         return postingService.getMyPosts(user.getUserId());
     }
+    //Заруудаас тодорхой утгатай ажлын чадвар шаардсан заруудыг буцаана
+    @GetMapping("/search/{skill}")
+    public List<InternshipPost> getSearchPostBySkill(@PathVariable String skill){
+        return postingService.getSearchPostBySkill(skill);
+    }
 
 
 }

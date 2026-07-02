@@ -186,4 +186,8 @@ public class PostingService {
     public Long getAllPostNumber() {
         return internshipPostRepository.count();
     }
+    //Заруудаас тодорхой утгатай ажлын чадвар шаардсан заруудыг буцаана
+    public List<InternshipPost> getSearchPostBySkill(String skill) {
+        return internshipPostRepository.findAllAndRequiredSkills(skill);
+    }
 }

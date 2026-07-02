@@ -90,8 +90,7 @@ public class StudentService {
     //тухайн сурагчийн илгээсэн бүх ажлийн хүсэлтийг харуулна
     public List<Application> getApplications(User user){
         Long studentId = studentRepository.findByUserId(user.getUserId()).getStudentId();
-        List<Application> applications = applicationRepository.findAllByStudentId(studentId);
-        return applications;
+        return applicationRepository.findAllByStudentId(studentId);
     }
     //тухайн сурагч нь тодорхой нэг хүсэлтийг дэлгэрэнгүй харах
     public Application getApplicationDetail(Long applicationId) {

@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/reviews/org/**").permitAll()
                         .requestMatchers("/api/postings//All").permitAll()
                         .requestMatchers("/api/organization/all").permitAll()
+                        .requestMatchers("/api/postings/search/**").permitAll()
 
                         .requestMatchers(
                                 HttpMethod.GET, "/api/postings/**").permitAll()
