@@ -32,6 +32,11 @@ public class AdminApi {
     public UserStatus updateUserStatus(@AuthenticationPrincipal User admin, @PathVariable Long userId, @RequestBody RequestUpdate request){
         return adminService.updateUserStatus(admin.getUserId(), userId, request);
     }
+    //хэрэглэгчийн устгах
+    @DeleteMapping("/users/{userId}")
+    public void deleteUser(@AuthenticationPrincipal User admin, @PathVariable Long userId){
+        adminService.deleteUser(admin.getUserId(), userId);
+    }
 
 
 }
