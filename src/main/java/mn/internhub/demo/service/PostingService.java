@@ -181,4 +181,9 @@ public class PostingService {
         Long orgId = organizationRepository.findByUserId(userId).getOrganizationId();
         return internshipPostRepository.findAllByOrganizationId(orgId);
     }
+
+    //оруулсан байгаа бүх зарийн тоог авах
+    public Long getAllPostNumber() {
+        return internshipPostRepository.count();
+    }
 }

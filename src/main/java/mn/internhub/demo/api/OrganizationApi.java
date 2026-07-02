@@ -43,6 +43,11 @@ public class OrganizationApi {
     public List<OrganizationReview> getOrgReview(@AuthenticationPrincipal User user, @PathVariable long Id){
         return organizationService.getOrgReview(Id);
     }
+    //бүртгэлтэй буй бүх байгуллагын тоог авах
+    @GetMapping("/all")
+    public Long getAllOrgNum(){
+        return organizationService.getAllOrgNxum();
+    }
 
 
 

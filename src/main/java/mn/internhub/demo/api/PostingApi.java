@@ -26,6 +26,11 @@ public class PostingApi {
     public List<ResponsePubPosts> getInternshipPosts(){
         return postingService.getInternshipPosts();
     }
+    //оруулсан буй бүр зарын тоог авах
+    @GetMapping("/All")
+    public Long getAllPostNumber(){
+        return postingService.getAllPostNumber();
+    }
     //тухайн нэг зарын дэлгэрэнгүйг харх/авах
     @GetMapping("/{postId}")
     public InternshipPost getInternshipPostDetail(@PathVariable Long postId){

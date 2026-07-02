@@ -28,6 +28,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/organization").permitAll()
                         .requestMatchers("/api/postings").permitAll()
                         .requestMatchers("/api/reviews/org/**").permitAll()
+                        .requestMatchers("/api/postings//All").permitAll()
                         .requestMatchers(
                                 HttpMethod.GET, "/api/postings/**").permitAll()
                         .anyRequest().authenticated())

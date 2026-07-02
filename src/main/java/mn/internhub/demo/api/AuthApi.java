@@ -40,7 +40,6 @@ public class AuthApi {
     @PostMapping("/register/admin")
     public ResponseEntity<AuthResponse> registerAdmin(@Valid @RequestBody RegisterAdminRequest request){
         return ResponseEntity.ok(authService.registerAdmin(request));
-
     }
     //хэрэглэгч нэвтрэх
     @PostMapping("/login")
