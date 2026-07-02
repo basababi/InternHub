@@ -2,6 +2,7 @@ package mn.internhub.demo.service;
 
 import mn.internhub.demo.api.OrganizationReviewApi;
 import mn.internhub.demo.api.dto.OrganizationReviewApi.RequestPostReview;
+import mn.internhub.demo.api.dto.OrganizationReviewApi.RequestUpdateReview;
 import mn.internhub.demo.data.OrganizationReview;
 import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.Student;
@@ -11,9 +12,13 @@ import mn.internhub.demo.repository.StudentRepository;
 import mn.internhub.demo.service.helperFunctions.gimmeId;
 import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class OrganizationReviewService {
@@ -39,7 +44,7 @@ public class OrganizationReviewService {
 
         OrganizationReview review = OrganizationReview.builder()
                 .organizationId(orgId)
-                .studentName(request.isanonymous()?student.getFirstName()+student.getLastName():"Anonymous"+sequence)
+                .studentName(request.isanonymous()?"Anonymous"+sequence:student.getFirstName()+student.getLastName())
                 .studentId(studentId)
                 .rating(request.rating())
                 .comment(request.comment())
@@ -48,5 +53,34 @@ public class OrganizationReviewService {
                 .build();
         organizationReviewRepository.save(review);
         return review;
+    }
+    //тухайн байгууллаг дээр ирсэн бүх үнэлгээг сэтгэгдэл олон нийт харах
+    public List<OrganizationReview> getAllReview(Long orgId) {
+        isItExist.isOrgExistByOrgId(orgId);
+        return organizationReviewRepository.findAllByOrganizationReviewId(orgId);
+    }
+    //сурагч нь оруулсан үнэлгээгээ засах
+    public OrganizationReview updateReview(Long userId, Long revId, RequestUpdateReview request) {
+        isItExist.isStudentByUserId(userId);
+        boolean isExistReview = organizationReviewRepository.existsById(revId);
+        if (!isExistReview){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"олдсонгүй");
+        }
+        Long studentId = gimmeId.userIdToStudentId(userId);
+        OrganizationReview review = organizationReviewRepository.findById(revId).orElseThrow(IllegalAccessError::new);
+        if (review.getOrganizationReviewId().equals(studentId)){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"хэрэглэгчийн эрх хүрэхгүй байна");
+        }
+        long sequence = anonymousService.getSequence();
+        Student student = studentRepository.findById(studentId).orElseThrow(IllegalAccessError::new);
+
+        OrganizationReview updated = OrganizationReview.builder()
+                .studentName(request.isAnonymous()?"Anonymous"+sequence:student.getFirstName()+student.getLastName())
+                .rating(request.rating())
+                .comment(request.comment())
+                .isAnonymous(request.isAnonymous())
+                .build();
+        organizationReviewRepository.save(updated);
+        return updated;
     }
 }
