@@ -1,5 +1,6 @@
 package mn.internhub.demo.api;
 
+import mn.internhub.demo.api.dto.adminApi.ResponseUserDetail;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.service.AdminService;
@@ -17,15 +18,15 @@ import java.util.List;
 public class AdminApi {
     @Autowired
     private AdminService adminService;
-    //систесийн бүх сурагчийн авна
+    //систесийн бүх хэрэглэгчийг авна
     @GetMapping("/users")
-    public List<Student> getAllStudent(@AuthenticationPrincipal User user){
-        return adminService.getAllStudent(user.getUserId());
+    public List<User> getAllUsers(@AuthenticationPrincipal User user){
+        return adminService.getAllUser(user.getUserId());
     }
-    //сурагчийн дэлгэрэнгүй мэдээллйиг авна
-    @GetMapping("/users/{studentId}")
-    public Student getStudentDetailById(@AuthenticationPrincipal User user, @PathVariable Long studentId){
-        return adminService.getAllStudentDetailById(user.getUserId(), studentId);
+    //хэрэглэгчийн дэлгэрэнгүй мэдээллйиг авна
+    @GetMapping("/users/{userId}")
+    public ResponseUserDetail getStudentDetailById(@AuthenticationPrincipal User user, @PathVariable Long userId){
+        return adminService.getAllUsersDetailById(user.getUserId(), userId);
     }
-    
+
 }

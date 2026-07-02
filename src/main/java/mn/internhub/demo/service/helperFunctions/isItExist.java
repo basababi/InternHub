@@ -18,7 +18,13 @@ public class isItExist {
     private OrganizationRepository organizationRepository;
     @Autowired
     private AdminRepository adminRepository;
-
+    //тухайн id-дээр хэрэглэгч байгааг шалгана
+    public void isUserExistByUserId(long id){
+        boolean isUserExist = userRepository.existsById(id);
+        if (!isUserExist){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"this user doesn't exist");
+        }
+    }
     //тухайн багш нь байгааг шалгана
     public void isTeacherExistByTeacherId(long id){
         boolean isTeacherExist = teacherRepository.existsById(id);

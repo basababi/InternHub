@@ -1,10 +1,17 @@
 package mn.internhub.demo.service;
 
+import mn.internhub.demo.api.dto.adminApi.ResponseUserDetail;
+import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.Student;
+import mn.internhub.demo.data.Teacher;
+import mn.internhub.demo.data.User;
 import mn.internhub.demo.repository.*;
+import mn.internhub.demo.service.helperFunctions.gimmeId;
 import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -13,7 +20,7 @@ public class AdminService {
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
-    private OrganizationService organizationService;
+    private OrganizationRepository organizationRepository;
     @Autowired
     private TeacherRepository teacherRepository;
     @Autowired
@@ -24,15 +31,61 @@ public class AdminService {
     private AdminRepository adminRepository;
     @Autowired
     private isItExist isItExist;
-    ////систесийн бүх сурагчийн авна
-    public List<Student> getAllStudent(Long userId) {
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private gimmeId gimmeId;
+
+    ////систесийн бүх хэрэглэгчий авна
+    public List<User> getAllUser(Long userId) {
         isItExist.isAdminByUserId(userId);
-        return studentRepository.findAll();
+        return userRepository.findAll();
     }
     //сурагчийн дэлгэрэнгүй мэдээллйиг авна
-    public Student getAllStudentDetailById(Long userId, Long studentId) {
-        isItExist.isAdminByUserId(userId);
-        isItExist.isStudentByUserId(studentId);
-        return studentRepository.findById(studentId).orElseThrow(IllegalAccessError::new);
+    public ResponseUserDetail getAllUsersDetailById(Long adminId, Long userId) {
+        isItExist.isAdminByUserId(adminId);
+
+        isItExist.isUserExistByUserId(userId);
+        if(gimmeId.userIdToOrgId(userId) != null){
+            Organizations organizations = organizationRepository.findById(gimmeId.userIdToOrgId(userId)).orElseThrow(IllegalAccessError::new);
+            return ResponseUserDetail.builder()
+                    .organizationId(organizations.getOrganizationId())
+                    .organizationName(organizations.getOrganizationName())
+                    .industry(organizations.getIndustry())
+                    .address(organizations.getAddress())
+                    .city(organizations.getCity())
+                    .site(organizations.getSite())
+                    .logoUrl(organizations.getLogoUrl())
+                    .description(organizations.getDescription())
+                    .isVerified(organizations.getIsVerified())
+                    .build();
+        }
+        else if (gimmeId.userIdToStudentId(userId) != null){
+            Student student = studentRepository.findById(gimmeId.userIdToStudentId(userId)).orElseThrow(IllegalAccessError::new);
+            return ResponseUserDetail.builder()
+                    .studentId(student.getStudentId())
+                    .firstName(student.getFirstName())
+                    .lastName(student.getLastName())
+                    .major(student.getMajor())
+                    .university(student.getUniversity())
+                    .courseYear(student.getCourseYear())
+                    .gpa(student.getGpa())
+                    .skills(student.getSkills())
+                    .languages(student.getLanguages())
+                    .teacherId(student.getStudentId())
+                    .build();
+        }
+        else if (gimmeId.userIdToTeacherId(userId) != null){
+            Teacher teacher = teacherRepository.findById(gimmeId.userIdToTeacherId(userId)).orElseThrow(IllegalAccessError::new);
+            return ResponseUserDetail.builder()
+                    .teacherId(teacher.getTeacherId())
+                    .phone(teacher.getPhone())
+                    .build();
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"эрх чинь бүрэхгүй байна");
+        }
     }
+
+
 }
