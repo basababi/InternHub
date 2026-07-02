@@ -1,9 +1,6 @@
 package mn.internhub.demo.service.helperFunctions;
 
-import mn.internhub.demo.repository.OrganizationRepository;
-import mn.internhub.demo.repository.StudentRepository;
-import mn.internhub.demo.repository.TeacherRepository;
-import mn.internhub.demo.repository.UserRepository;
+import mn.internhub.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -19,6 +16,8 @@ public class isItExist {
     private UserRepository userRepository;
     @Autowired
     private OrganizationRepository organizationRepository;
+    @Autowired
+    private AdminRepository adminRepository;
 
     //тухайн багш нь байгааг шалгана
     public void isTeacherExistByTeacherId(long id){
@@ -60,6 +59,13 @@ public class isItExist {
         boolean isStudentExist = studentRepository.existsByUserId(id);
         if (!isStudentExist){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"this user is not student");
+        }
+    }
+    //тухайн админ байгааг шалгана
+    public void isAdminByUserId(long id){
+        boolean isAdminExist = adminRepository.existsByUserId(id);
+        if (!isAdminExist){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"this user is not admin");
         }
     }
 }
