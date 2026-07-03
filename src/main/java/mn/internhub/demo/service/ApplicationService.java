@@ -127,13 +127,10 @@ public class ApplicationService {
         isItExist.isStudentByUserId(userId);
         isApplicationExist(appId);
         Application application = applicationRepository.getReferenceById(appId);
-
         boolean hasPermission = studentRepository.findByUserId(userId).getStudentId().equals(application.getStudentId());
-        log.info("чамдэрх {} ба чиний student ID{} ба чиний app-д хариу student id {}",hasPermission,studentRepository.findByUserId(userId).getStudentId(),application.getStudentId());
         if (!hasPermission){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чинийх биш байнаа хө");
         }
-        log.info("энд байна 5");
         application.setStatus(Status.WITHDRAWN);
         applicationRepository.save(application);
     }

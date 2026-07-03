@@ -52,7 +52,7 @@ public class StudentApi {
         return studentService.getApplicationDetail(id);
     }
     //Бүртгэлтэй буй нийт сурагчийн тоо
-    @GetMapping("/All")
+    @GetMapping("/all")
     public long getAllStudentNum(){
         return studentService.getAllStudentNum();
     }
