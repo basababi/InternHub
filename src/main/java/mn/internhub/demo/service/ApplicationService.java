@@ -10,10 +10,8 @@ import mn.internhub.demo.data.InternshipPost;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.enums.PaymentStatus;
 import mn.internhub.demo.data.enums.Status;
-import mn.internhub.demo.repository.ApplicationRepository;
-import mn.internhub.demo.repository.InternshipPostRepository;
-import mn.internhub.demo.repository.OrganizationRepository;
-import mn.internhub.demo.repository.StudentRepository;
+import mn.internhub.demo.data.enums.UserStatus;
+import mn.internhub.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,10 +31,20 @@ public class ApplicationService {
     private OrganizationRepository organizationRepository;
     @Autowired
     private InternshipPostRepository internshipPostRepository;
+    @Autowired
+    private UserRepository userRepository;
 
 
     //application хүсэлт үүсгэнэ post
     public Application createApplication(RequestApplication request) {
+        boolean isPostExist = internshipPostRepository.existsById(request.internshipPostId());
+        if (!isPostExist){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"зар чинь байхгүй байнаа хө");
+        }
+        boolean isBanned = userRepository.findById(studentRepository.findById(request.studentId()).orElseThrow(IllegalAccessError::new).getUserId()).orElseThrow(IllegalAccessError::new).getStatus().equals(UserStatus.BANNED);
+        if (isBanned){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"ээ чи бандуулсан байна шдээ");
+        }
         Application application = Application.builder()
                 .studentId(request.studentId())
                 .internshipPostId(request.internshipPostId())
@@ -52,7 +60,7 @@ public class ApplicationService {
     public ResponseApplicationDetail getApplicationDetail(Long applicationId) {
         Application application = applicationRepository.findById(applicationId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found application"));
         Student student = studentRepository.findByUserId(application.getStudentId());
-        ResponseApplicationDetail responseApplicationDetail = ResponseApplicationDetail.builder()
+        return ResponseApplicationDetail.builder()
                 .firstName(student.getFirstName())
                 .lastName(student.getFirstName())
                 .major(student.getMajor())
@@ -66,25 +74,22 @@ public class ApplicationService {
                 .coverLetter(application.getCoverLetter())
                 .createdAt(application.getSubmittedAt())
                 .build();
-        return responseApplicationDetail;
     }
 
     //application id-гаар нь тухайн application-ий status-ийг өөрчилнө
     public void updateApplicationStatus(Long id, Status status) {
         isApplicationExist(id);
-        Application application = applicationRepository.getById(id);
+        Application application = applicationRepository.getReferenceById(id);
         application.setStatus(status);
         applicationRepository.save(application);
-        log.info("амжилттай болсон байх магадлалтай: {}", application.getStatus());
     }
 
     //applicaiton-аа сурагч нь өөрөө татгалзах
     public void updateApplicationStatusByStudent(Long id) {
         isApplicationExist(id);
-        Application application = applicationRepository.getById(id);
+        Application application = applicationRepository.getReferenceById(id);
         application.setStatus(Status.WITHDRAWN);
         applicationRepository.save(application);
-        log.info("сурагч нь ажилттай өөрчилсөн байх магадлалтай: {}", application.getStatus());
     }
 
     //Компани нь өөр дээр нь ирсэн application хүсэлтүүдийг харах
@@ -98,7 +103,7 @@ public class ApplicationService {
         //тэр байгуулгын id-дээр хариалагдаж буй internshipPost-уудийг бүгдийг авна буюу тухайн байгуугын оруулсан заруудыг авна
         List<InternshipPost> internshipPosts = internshipPostRepository.findAllByOrganizationId(organizationId);
         //зар бүр дээр нь ажилна
-        List<ResponseApplicationsToOrganization> responseFull = internshipPosts.stream()
+        return internshipPosts.stream()
                 .map(post -> {
                     //нэг зар бүр дээр ирсэн хүсэлтийг авна
                     List<Application> eachPostsApplication = applicationRepository.findAllByInternshipPostId(post.getInternshipPostId());
@@ -126,7 +131,6 @@ public class ApplicationService {
                             .build();
                 })
                 .toList();
-        return responseFull;
     }
 
     //helper function

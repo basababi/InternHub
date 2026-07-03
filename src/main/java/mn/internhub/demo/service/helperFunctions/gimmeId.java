@@ -14,9 +14,8 @@ public class gimmeId {
     @Autowired
     private TeacherRepository teacherRepository;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private OrganizationRepository organizationRepository;
+
     //userId-гаар нь байгууллагын id-ийг буцаана
     public Long userIdToOrgId(Long userId){
         return organizationRepository.findByUserId(userId).getOrganizationId();

@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.authApiDto.RegisterOrganizationRequest;
 import mn.internhub.demo.api.dto.authApiDto.*;
 import mn.internhub.demo.data.*;
+import mn.internhub.demo.data.enums.Role;
+import mn.internhub.demo.data.enums.UserStatus;
 import mn.internhub.demo.repository.*;
 import mn.internhub.demo.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +92,7 @@ public class AuthService {
                 .email(reqUser.email())
                 .password(passwordEncoder.encode(reqUser.password()))
                 .role(reqUser.role())
-                .isActive(true)
+                .status(reqUser.role() == Role.COMPANY? UserStatus.PENDING:UserStatus.ACTIVE)
                 .createdAt(now)
                 .lastLoginAt(now)
                 .build();

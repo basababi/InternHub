@@ -32,9 +32,7 @@ public class StudentService {
         if (!userExist) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user doesn't found");
         }
-        log.info("хэрэглэгчийн id байна id нь :{}",id);
         Student student = studentRepository.findByUserId(id);
-        log.info("тухайн id-д хариалагдах сурагчийн мэдээллийг авсан");
         if(updateRequest.firstName() != null){
             student.setFirstName(updateRequest.firstName());
         }
@@ -66,7 +64,6 @@ public class StudentService {
             student.setLanguages(updateRequest.languages());
         }
         studentRepository.save(student);
-        log.info("сурагчийн мэдээллийг save хийсэн");
         return student;
     }
     //сурагчийн мэдээллийг явуулах
@@ -74,6 +71,7 @@ public class StudentService {
         return studentRepository.findByUserId(userId);
     }
 
+    //сурагч нь өөрийн мэдээлэлээ авна
     public Student getStudentProfile(Long userId, Long id) {
         boolean isTeacher = teacherRepository.existsByUserId(userId);
         boolean isOrganization = organizationRepository.existsByUserId(userId);

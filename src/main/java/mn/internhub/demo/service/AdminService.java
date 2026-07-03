@@ -1,10 +1,13 @@
 package mn.internhub.demo.service;
 
+import mn.internhub.demo.api.dto.adminApi.RequestUpdate;
 import mn.internhub.demo.api.dto.adminApi.ResponseUserDetail;
 import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.Teacher;
 import mn.internhub.demo.data.User;
+import mn.internhub.demo.data.enums.Role;
+import mn.internhub.demo.data.enums.UserStatus;
 import mn.internhub.demo.repository.*;
 import mn.internhub.demo.service.helperFunctions.gimmeId;
 import mn.internhub.demo.service.helperFunctions.isItExist;
@@ -44,11 +47,12 @@ public class AdminService {
     //сурагчийн дэлгэрэнгүй мэдээллйиг авна
     public ResponseUserDetail getAllUsersDetailById(Long adminId, Long userId) {
         isItExist.isAdminByUserId(adminId);
-
         isItExist.isUserExistByUserId(userId);
+        UserStatus status = userRepository.findById(userId).orElseThrow(IllegalAccessError::new).getStatus();
         if(gimmeId.userIdToOrgId(userId) != null){
             Organizations organizations = organizationRepository.findById(gimmeId.userIdToOrgId(userId)).orElseThrow(IllegalAccessError::new);
             return ResponseUserDetail.builder()
+                    .status(status)
                     .organizationId(organizations.getOrganizationId())
                     .organizationName(organizations.getOrganizationName())
                     .industry(organizations.getIndustry())
@@ -86,6 +90,27 @@ public class AdminService {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"эрх чинь бүрэхгүй байна");
         }
     }
-
-
+    //хэрэглэгчдийн status-ийг өөрчилөх
+    public UserStatus updateUserStatus(Long adminId, Long userId, RequestUpdate request) {
+        isItExist.isAdminByUserId(adminId);
+        isItExist.isUserExistByUserId(userId);
+        boolean isAdmin = adminRepository.existsByUserId(userId);
+        if (isAdmin){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"эрх чинь хүрэхгүй байна");
+        }
+        User user = userRepository.findById(userId).orElseThrow(IllegalAccessError::new);
+        user.setStatus(request.status());
+        userRepository.save(user);
+        return user.getStatus();
+    }
+    //хэрэглэгчийн устгана
+    public void deleteUser(Long adminId, Long userId) {
+        isItExist.isAdminByUserId(adminId);
+        isItExist.isUserExistByUserId(userId);
+        boolean isAdmin = adminRepository.existsByUserId(userId);
+        if (isAdmin){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"эрх чинь хүрэхгүй байна");
+        }
+        userRepository.delete(userRepository.findById(userId).orElseThrow(IllegalAccessError::new));
+    }
 }

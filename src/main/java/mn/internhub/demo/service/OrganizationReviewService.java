@@ -6,9 +6,11 @@ import mn.internhub.demo.api.dto.OrganizationReviewApi.RequestUpdateReview;
 import mn.internhub.demo.data.OrganizationReview;
 import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.Student;
+import mn.internhub.demo.data.enums.UserStatus;
 import mn.internhub.demo.repository.OrganizationRepository;
 import mn.internhub.demo.repository.OrganizationReviewRepository;
 import mn.internhub.demo.repository.StudentRepository;
+import mn.internhub.demo.repository.UserRepository;
 import mn.internhub.demo.service.helperFunctions.gimmeId;
 import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,9 @@ public class OrganizationReviewService {
     private gimmeId gimmeId;
     @Autowired
     private AnonymousService anonymousService;
+    @Autowired
+    private UserRepository userRepository;
+
     //Сурагч нь байгууллагаа үнэлэх
     public OrganizationReview createReview(Long userId,Long orgId ,RequestPostReview request) {
         isItExist.isStudentByUserId(userId);
@@ -62,6 +67,10 @@ public class OrganizationReviewService {
     //сурагч нь оруулсан үнэлгээгээ засах
     public OrganizationReview updateReview(Long userId, Long revId, RequestUpdateReview request) {
         isItExist.isStudentByUserId(userId);
+        boolean isBanned = userRepository.findById(userId).orElseThrow(IllegalAccessError::new).getStatus().equals(UserStatus.BANNED);
+        if (isBanned){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"ээ чи бандуулцан байна шдэээ");
+        }
         boolean isExistReview = organizationReviewRepository.existsById(revId);
         if (!isExistReview){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"олдсонгүй");

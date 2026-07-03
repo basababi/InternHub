@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import mn.internhub.demo.data.enums.Role;
+import mn.internhub.demo.data.enums.UserStatus;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -50,7 +51,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-    Boolean isActive;
+    UserStatus status;
     @CreatedDate
     private LocalDateTime createdAt;
 

@@ -11,6 +11,7 @@ import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.PostViews;
 import mn.internhub.demo.data.enums.PostStatus;
 import mn.internhub.demo.data.enums.Status;
+import mn.internhub.demo.data.enums.UserStatus;
 import mn.internhub.demo.repository.InternshipPostRepository;
 import mn.internhub.demo.repository.OrganizationRepository;
 import mn.internhub.demo.repository.StudentRepository;
@@ -72,13 +73,9 @@ public class PostingService {
         if (!postExist){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"post doesn't found");
         }
-        log.info("post шалгасан байна");
         PostViews postViews = postViewsRepository.findByInternshipPostId(postId);
-        log.info("postID гаар нь үзэлтйг нь авсан");
         Integer viewCount = postViews.getViewCount()+1;
-        log.info("Нэмсэн");
         postViews.setViewCount(viewCount);
-        log.info("Хадгалсан");
         postViewsRepository.save(postViews);
 
         return internshipPostRepository.findById(postId).orElseThrow(IllegalAccessError::new);
@@ -86,9 +83,11 @@ public class PostingService {
     //байгууллаг нь зар оруулах
     public InternshipPost createPost(Long userId, @Valid RequestCreatePost request) {
         isItExist.isOrgByUserId(userId);
-        log.info("хэрэглэгчээ шалгаад алдаагүй ");
+        boolean isActive = userRepository.findById(userId).orElseThrow(IllegalAccessError::new).getStatus().equals(UserStatus.ACTIVE);
+        if (!isActive){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"your status is pending or banned");
+        }
         Long orgId = organizationRepository.findByUserId(userId).getOrganizationId();
-        log.info("тухайн хэрэглэгчийн байгууллагын id авсан");
         InternshipPost createpost = InternshipPost.builder()
                 .organizationId(orgId)
                 .title(request.title())
@@ -105,17 +104,13 @@ public class PostingService {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        log.info("post-оо амжилттай үүсгэсэн");
         internshipPostRepository.save(createpost);
-        log.info("post-оо амжилттай хадгаллаа");
         PostViews postViews = PostViews.builder()
                 .internshipPostId(createpost.getInternshipPostId())
                 .viewCount(0)
                 .createdAt(LocalDateTime.now())
                 .build();
-        log.info("postView-оо амжилттай үүсгэсэн");
         postViewsRepository.save(postViews);
-        log.info("postView-оо амжилттай хадгаллаа");
         return createpost;
     }
     //байгууллага нь өөрийн оруулсан зарыг өөрчлөх
