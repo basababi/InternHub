@@ -42,9 +42,10 @@ public class OrganizationApi {
         return organizationService.updateOrgProfile(user.getUserId(), request);
     }
     //тухайн байгууллагын үнэлгээ сэтгэгдлийг авах ингэхдэ тухайн байгуулгын id-гаар нь авна
-    @GetMapping("/{id}/reviews")
-    public List<OrganizationReview> getOrgReview(@AuthenticationPrincipal User user, @PathVariable long Id){
-        return organizationService.getOrgReview(Id);
+    @GetMapping("/{orgId}/reviews")
+    public List<OrganizationReview> getOrgReview(@PathVariable long orgId){
+        log.info("энэ ажилсан 1");
+        return organizationService.getOrgReview(orgId);
     }
     //бүртгэлтэй буй бүх байгуллагын тоог авах
     @GetMapping("/all")

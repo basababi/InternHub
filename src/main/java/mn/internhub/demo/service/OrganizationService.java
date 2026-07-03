@@ -84,8 +84,7 @@ public class OrganizationService {
     //тухайн байгуулгын сэтгэгдэл үнэлгээг харах
     public List<OrganizationReview> getOrgReview(long orgId) {
         isItExist.isOrgExistByOrgId(orgId);
-        Long organizationId = organizationRepository.findByUserId(orgId).getOrganizationId();
-        return organizationReviewRepository.findAllByOrganizationId(organizationId);
+        return organizationReviewRepository.findAllByOrganizationId(orgId);
     }
 
     //бүх бүртгэлтэй байгаа байгуллагын тоог авна
