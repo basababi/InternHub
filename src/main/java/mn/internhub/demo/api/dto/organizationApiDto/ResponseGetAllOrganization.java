@@ -1,6 +1,7 @@
 package mn.internhub.demo.api.dto.organizationApiDto;
 
 import lombok.Builder;
+import mn.internhub.demo.data.enums.UserStatus;
 
 @Builder
 public record ResponseGetAllOrganization(
@@ -10,6 +11,7 @@ public record ResponseGetAllOrganization(
         String city,
         String logoUrl,
         String description,
-        String industry
+        String industry,
+        UserStatus status
 ) {
 }

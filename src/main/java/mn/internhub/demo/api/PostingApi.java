@@ -39,6 +39,7 @@ public class PostingApi {
     //байгууллаг нь зар оруулах
     @PostMapping
     public InternshipPost createPost(@AuthenticationPrincipal User user, @Valid @RequestBody RequestCreatePost request) {
+        log.info("энэ ажилсан 1");
         return postingService.createPost(user.getUserId(),request);
     }
     //байгууллаг нь оруулсан зараа өөрчилж шинчлэлт оруулах

@@ -5,8 +5,10 @@ import mn.internhub.demo.api.dto.organizationApiDto.RequestOwnprofileUpdate;
 import mn.internhub.demo.api.dto.organizationApiDto.ResponseGetAllOrganization;
 import mn.internhub.demo.data.OrganizationReview;
 import mn.internhub.demo.data.Organizations;
+import mn.internhub.demo.data.enums.UserStatus;
 import mn.internhub.demo.repository.OrganizationRepository;
 import mn.internhub.demo.repository.OrganizationReviewRepository;
+import mn.internhub.demo.repository.UserRepository;
 import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,12 +28,15 @@ public class OrganizationService {
     private OrganizationReviewRepository organizationReviewRepository;
     @Autowired
     private isItExist isItExist;
+    @Autowired
+    private UserRepository userRepository;
 
     //Нийтэд ил харагдах байдлаар бүх байгуулгын мэдээллийг авах
     public List<ResponseGetAllOrganization> getAllOrganization() {
         List<Organizations> allOrganizations = organizationRepository.findAll();
         return allOrganizations.stream()
                 .map(perOrganization ->{
+                    UserStatus status = userRepository.findById(perOrganization.getUserId()).orElseThrow(IllegalAccessError::new).getStatus();
                     return ResponseGetAllOrganization.builder()
                             .organizationId(perOrganization.getOrganizationId())
                             .organizationName(perOrganization.getOrganizationName())
@@ -40,6 +45,7 @@ public class OrganizationService {
                             .logoUrl(perOrganization.getLogoUrl())
                             .description(perOrganization.getDescription())
                             .industry(perOrganization.getIndustry())
+                            .status(status)
                             .build();
                 })
                 .toList();
