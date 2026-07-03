@@ -1,5 +1,6 @@
 package mn.internhub.demo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.adminApi.RequestUpdate;
 import mn.internhub.demo.api.dto.adminApi.ResponseUserDetail;
 import mn.internhub.demo.data.Organizations;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class AdminService {
     @Autowired
@@ -49,9 +51,12 @@ public class AdminService {
         isItExist.isAdminByUserId(adminId);
         isItExist.isUserExistByUserId(userId);
         UserStatus status = userRepository.findById(userId).orElseThrow(IllegalAccessError::new).getStatus();
-        if(gimmeId.userIdToOrgId(userId) != null){
+        Role role = userRepository.findById(userId).orElseThrow(IllegalAccessError::new).getRole();
+        //хэрэв байгуулга бол
+        if(role.equals(Role.COMPANY)){
             Organizations organizations = organizationRepository.findById(gimmeId.userIdToOrgId(userId)).orElseThrow(IllegalAccessError::new);
             return ResponseUserDetail.builder()
+                    .role(role)
                     .status(status)
                     .organizationId(organizations.getOrganizationId())
                     .organizationName(organizations.getOrganizationName())
@@ -64,9 +69,11 @@ public class AdminService {
                     .isVerified(organizations.getIsVerified())
                     .build();
         }
-        else if (gimmeId.userIdToStudentId(userId) != null){
+        //хэрэв сурагч бол
+        else if (role.equals(Role.STUDENT)){
             Student student = studentRepository.findById(gimmeId.userIdToStudentId(userId)).orElseThrow(IllegalAccessError::new);
             return ResponseUserDetail.builder()
+                    .role(role)
                     .studentId(student.getStudentId())
                     .firstName(student.getFirstName())
                     .lastName(student.getLastName())
@@ -79,9 +86,11 @@ public class AdminService {
                     .teacherId(student.getStudentId())
                     .build();
         }
-        else if (gimmeId.userIdToTeacherId(userId) != null){
+        //хэрэв багш бол
+        else if (role.equals(Role.TEACHER)){
             Teacher teacher = teacherRepository.findById(gimmeId.userIdToTeacherId(userId)).orElseThrow(IllegalAccessError::new);
             return ResponseUserDetail.builder()
+                    .role(role)
                     .teacherId(teacher.getTeacherId())
                     .phone(teacher.getPhone())
                     .build();

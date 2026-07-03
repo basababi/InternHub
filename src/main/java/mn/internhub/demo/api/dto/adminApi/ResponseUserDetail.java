@@ -1,6 +1,7 @@
 package mn.internhub.demo.api.dto.adminApi;
 
 import lombok.Builder;
+import mn.internhub.demo.data.enums.Role;
 import mn.internhub.demo.data.enums.Status;
 import mn.internhub.demo.data.enums.UserStatus;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Builder
 public record ResponseUserDetail(
 
+        Role role,
         UserStatus status,
         // Student
         Long studentId,

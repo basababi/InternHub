@@ -18,7 +18,8 @@ public class UserApi {
         return Map.of(
                 "id", user.getUserId(),
                 "email", user.getEmail(),
-                "role", user.getRole());
+                "role", user.getRole(),
+                "status",user.getStatus());
     }
 
 }
