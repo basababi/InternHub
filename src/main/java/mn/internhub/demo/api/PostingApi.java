@@ -27,7 +27,7 @@ public class PostingApi {
         return postingService.getInternshipPosts();
     }
     //оруулсан буй бүр зарын тоог авах
-    @GetMapping("/All")
+    @GetMapping("/all")
     public Long getAllPostNumber(){
         return postingService.getAllPostNumber();
     }
