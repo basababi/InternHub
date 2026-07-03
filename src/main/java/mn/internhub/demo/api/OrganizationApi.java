@@ -50,6 +50,6 @@ public class OrganizationApi {
     //бүртгэлтэй буй бүх байгуллагын тоог авах
     @GetMapping("/all")
     public Long getAllOrgNum(){
-        return organizationService.getAllOrgNxum();
+        return organizationService.getAllOrgNum();
     }
 }

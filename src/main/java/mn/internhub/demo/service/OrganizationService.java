@@ -88,7 +88,7 @@ public class OrganizationService {
     }
 
     //бүх бүртгэлтэй байгаа байгуллагын тоог авна
-    public Long getAllOrgNxum() {
+    public Long getAllOrgNum() {
             return organizationRepository.count();
         }
 }
