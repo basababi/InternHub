@@ -1,10 +1,7 @@
 package mn.internhub.demo.service;
 
 import lombok.extern.slf4j.Slf4j;
-import mn.internhub.demo.api.dto.applicationApiDto.RequestApplication;
-import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplication;
-import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationDetail;
-import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationsToOrganization;
+import mn.internhub.demo.api.dto.applicationApiDto.*;
 import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.InternshipPost;
 import mn.internhub.demo.data.Student;
@@ -12,6 +9,8 @@ import mn.internhub.demo.data.enums.PaymentStatus;
 import mn.internhub.demo.data.enums.Status;
 import mn.internhub.demo.data.enums.UserStatus;
 import mn.internhub.demo.repository.*;
+import mn.internhub.demo.service.helperFunctions.gimmeId;
+import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,6 +32,12 @@ public class ApplicationService {
     private InternshipPostRepository internshipPostRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private gimmeId gimmeId;
+    @Autowired
+    private isItExist isItExist;
+    @Autowired
+    private TeacherRepository teacherRepository;
 
 
     //application хүсэлт үүсгэнэ post
@@ -56,13 +61,40 @@ public class ApplicationService {
         return applicationRepository.save(application);
     }
 
-    // багш эсвэл комнаны нь тухайн application-ийг илүү дэлгэрэнгүй харна үүнд нв сурагчийн дэлгэрэнгүй мэдээлэл орно.
+    // эрхтэй хүний application-ийг илүү дэлгэрэнгүй харна үүнд нв сурагчийн дэлгэрэнгүй мэдээлэл орно.
     public ResponseApplicationDetail getApplicationDetail( Long userId,Long applicationId) {
         Application application = applicationRepository.findById(applicationId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found application"));
+        if (studentRepository.existsByUserId(userId)){
+            if (!application.getStudentId().equals(studentRepository.findByUserId(userId).getStudentId())){
+                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чинийх биш байнаа хө");
+            }
+        }
+        else if (teacherRepository.existsByUserId(userId)) {
+            Long teacherId = gimmeId.userIdToTeacherId(userId);
+            //тухайн сурагч = appID-ийн хариулагдаж буй сурагч
+            //тухайн сурагчийн багшийн id нь
+            Long studentTeacherId = studentRepository.findById(applicationRepository.findById(applicationId).orElseThrow(IllegalAccessError::new).getStudentId()).orElseThrow(IllegalAccessError::new).getTeacherId();
+            //тухайн сурагчийн хариуцаж буй багш нь id  нь байхгүй бол эсвэл тухайн хариуцаж байгаа багш id нь одоо хандаж дэлгэрэнгүй мэдээлэл авах гэж байгаа багшийн  Id-тай таарахгүй байвал энэ биелэн
+            if (studentTeacherId != null || !studentTeacherId.equals(teacherId)) {
+                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "чи багш нь мөн юм уу дөө");
+            }
+        }
+        else if (organizationRepository.existsByUserId(userId)){
+            Long orgId= gimmeId.userIdToOrgId(userId);
+            boolean havePermission = internshipPostRepository.findById(applicationRepository.findById(applicationId).orElseThrow(IllegalAccessError::new).getInternshipPostId()).orElseThrow(IllegalAccessError::new).getOrganizationId().equals(orgId);
+            if (!havePermission){
+                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чи биш байна шдээ хө");
+            }
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"хэн юм бээ чи");
+        }
         Student student = studentRepository.findByUserId(application.getStudentId());
         return ResponseApplicationDetail.builder()
+                .appId(application.getApplicationId())
                 .firstName(student.getFirstName())
                 .lastName(student.getFirstName())
+                .studentId(student.getStudentId())
                 .major(student.getMajor())
                 .university(student.getUniversity())
                 .courseYear(student.getCourseYear())
@@ -77,10 +109,13 @@ public class ApplicationService {
     }
 
     //application id-гаар нь тухайн application-ий status-ийг өөрчилнө
-    public void updateApplicationStatus(Long id, Status status) {
-        isApplicationExist(id);
-        Application application = applicationRepository.getReferenceById(id);
-        application.setStatus(status);
+    public void updateApplicationStatus(Long userID ,Long appId, RequestStatus status) {
+        isApplicationExist(appId);
+        Application application = applicationRepository.getReferenceById(appId);
+        if (!gimmeId.userIdToOrgId(userID).equals(internshipPostRepository.findById(application.getInternshipPostId()).orElseThrow(IllegalAccessError::new).getOrganizationId())){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"not yourssss");
+        }
+        application.setStatus(status.status());
         applicationRepository.save(application);
     }
 
@@ -94,10 +129,7 @@ public class ApplicationService {
 
     //Компани нь өөр дээр нь ирсэн application хүсэлтүүдийг харах
     public List<ResponseApplicationsToOrganization> getPendingApplications(Long userId) {
-        boolean isCompany = organizationRepository.existsByUserId(userId);
-        if (!isCompany) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Company user doesn't found");
-        }
+        isItExist.isOrgByUserId(userId);
         //тухайн хэрэглэгчийн хариалагдах байгуулгын id-ийг авна
         Long organizationId = organizationRepository.findByUserId(userId).getOrganizationId();
         //тэр байгуулгын id-дээр хариалагдаж буй internshipPost-уудийг бүгдийг авна буюу тухайн байгуугын оруулсан заруудыг авна
@@ -120,9 +152,12 @@ public class ApplicationService {
                                                 .university(student.getUniversity())
                                                 .courseYear(student.getCourseYear())
                                                 .gpa(student.getGpa())
+                                                .status(each.getStatus())
+                                                .coverLetter(each.getCoverLetter())
                                                 .build();
                                     })
                                     .toList();
+
 
                     return ResponseApplicationsToOrganization.builder()
                             .internshipId(post.getInternshipPostId())

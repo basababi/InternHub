@@ -2,7 +2,9 @@ package mn.internhub.demo.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.applicationApiDto.RequestApplication;
+import mn.internhub.demo.api.dto.applicationApiDto.RequestStatus;
 import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationDetail;
 import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationsToOrganization;
 import mn.internhub.demo.data.Application;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/applications")
@@ -32,9 +35,10 @@ public class ApplicationApi {
         return applicationService.getApplicationDetail(user.getUserId(),appId);
     }
     //Компани нь ирсэн application-ийг шүүгээд төлвийг нь өөрчилж болдог болгов
-    @PutMapping("/{id}/")
-    public void updateApplicationStatus(@AuthenticationPrincipal User user,@PathVariable Long id, @Valid @RequestBody Status status){
-        applicationService.updateApplicationStatus(id, status);
+    @PutMapping("/{appId}/status")
+    public void updateApplicationStatus(@AuthenticationPrincipal User user,@PathVariable Long appId, @Valid @RequestBody RequestStatus status){
+        log.info("asd");
+        applicationService.updateApplicationStatus(user.getUserId(),appId, status);
     }
     //тухайн сурагч нь өөрийн илгээсэн application-ийн өөрөө цуцлах
     @PutMapping("/{id}/withdraw")

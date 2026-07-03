@@ -66,6 +66,9 @@ public class StudentService {
         if (updateRequest.languages() != null){
             student.setLanguages(updateRequest.languages());
         }
+        if (updateRequest.teacherId() != null){
+            student.setTeacherId(updateRequest.teacherId());
+        }
         studentRepository.save(student);
         return student;
     }

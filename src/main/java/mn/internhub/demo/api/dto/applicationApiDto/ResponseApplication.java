@@ -1,6 +1,7 @@
 package mn.internhub.demo.api.dto.applicationApiDto;
 
 import lombok.Builder;
+import mn.internhub.demo.data.enums.Status;
 
 import java.math.BigDecimal;
 // энэ дангаараа ашиглахгүй дээ
@@ -12,6 +13,8 @@ public record ResponseApplication(
         String major,
         String university,
         Integer courseYear,
-        BigDecimal gpa
+        BigDecimal gpa,
+        Status status,
+        String coverLetter
 ) {
 }

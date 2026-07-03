@@ -8,8 +8,10 @@ import java.util.List;
 
 @Builder
 public record ResponseApplicationDetail(
+        Long appId,
         String firstName,
         String lastName,
+        Long studentId,
         String major,
         String university,
         Integer courseYear,

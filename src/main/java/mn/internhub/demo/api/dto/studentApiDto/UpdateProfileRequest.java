@@ -13,6 +13,7 @@ public record UpdateProfileRequest(
     Double  phone,
     String  shortBio,
     List<String>skills,
-    List<String> languages
+    List<String> languages,
+    Long teacherId
 ) {
 }

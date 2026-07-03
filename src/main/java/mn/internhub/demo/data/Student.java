@@ -33,5 +33,5 @@ public class Student {
     private String shortBio;
     private List<String> skills;
     private List<String> languages;
-
+    private Long teacherId;
 }

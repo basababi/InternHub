@@ -20,9 +20,8 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
     private Long applicationId;
-    @Column(nullable = false, unique = true)
+
     private Long studentId;
-    @Column(nullable = false, unique = true)
     private Long internshipPostId;
     private Status status;
     private String coverLetter;
