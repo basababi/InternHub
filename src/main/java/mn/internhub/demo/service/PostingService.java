@@ -82,16 +82,12 @@ public class PostingService {
     }
     //байгууллаг нь зар оруулах
     public InternshipPost createPost(Long userId, @Valid RequestCreatePost request) {
-
         isItExist.isOrgByUserId(userId);
-        log.info("энэ ажилсан 2");
         boolean isActive = userRepository.findById(userId).orElseThrow(IllegalAccessError::new).getStatus().equals(UserStatus.ACTIVE);
         if (!isActive){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"your status is pending or banned");
         }
-        log.info("энэ ажилсан 3");
         Long orgId = organizationRepository.findByUserId(userId).getOrganizationId();
-        log.info("энэ ажилсан 4");
         InternshipPost createpost = InternshipPost.builder()
                 .organizationId(orgId)
                 .title(request.title())
@@ -109,14 +105,12 @@ public class PostingService {
                 .updatedAt(LocalDateTime.now())
                 .build();
         internshipPostRepository.save(createpost);
-        log.info("энэ ажилсан 5");
         PostViews postViews = PostViews.builder()
                 .internshipPostId(createpost.getInternshipPostId())
                 .viewCount(0)
                 .createdAt(LocalDateTime.now())
                 .build();
         postViewsRepository.save(postViews);
-        log.info("энэ ажилсан 6");
         return createpost;
     }
     //байгууллага нь өөрийн оруулсан зарыг өөрчлөх
@@ -189,6 +183,6 @@ public class PostingService {
     }
     //Заруудаас тодорхой утгатай ажлын чадвар шаардсан заруудыг буцаана
     public List<InternshipPost> getSearchPostBySkill(String skill) {
-        return internshipPostRepository.findAllByRequiredSkills(skill);
+        return internshipPostRepository.findAllByRequiredSkillsContaining(skill);
     }
 }

@@ -8,5 +8,7 @@ import java.util.List;
 
 public interface InternshipPostRepository extends JpaRepository<InternshipPost,Long> {
     List<InternshipPost> findAllByOrganizationId(Long organizationId);
-    List<InternshipPost> findAllByRequiredSkills(String skill);
+
+
+    List<InternshipPost> findAllByRequiredSkillsContaining(String skill);
 }

@@ -27,6 +27,7 @@ public class InternshipPost {
     private String description;
     private List<String> requiredMajors;
     private BigDecimal minGpa;
+    @ElementCollection
     private List<String> requiredSkills;
     private Integer salaryMin;
     private Integer salaryMax;
