@@ -37,13 +37,13 @@ public class ApplicationApi {
     //Компани нь ирсэн application-ийг шүүгээд төлвийг нь өөрчилж болдог болгов
     @PutMapping("/{appId}/status")
     public void updateApplicationStatus(@AuthenticationPrincipal User user,@PathVariable Long appId, @Valid @RequestBody RequestStatus status){
-        log.info("asd");
         applicationService.updateApplicationStatus(user.getUserId(),appId, status);
     }
     //тухайн сурагч нь өөрийн илгээсэн application-ийн өөрөө цуцлах
-    @PutMapping("/{id}/withdraw")
-    public void updateApplicationStatusByStudent(@AuthenticationPrincipal User user,  @PathVariable Long id){
-        applicationService.updateApplicationStatusByStudent(id);
+    @PutMapping("/{appId}/withdraw")
+    public void updateApplicationStatusByStudent(@AuthenticationPrincipal User user,  @PathVariable Long appId){
+        log.info("энд байна 1");
+        applicationService.updateApplicationStatusByStudent(user.getUserId(),appId);
     }
     //тухайн комтани нь өөр дээр нь ирсэн application-ний хүсэлтийг харах
     @GetMapping("/pending")

@@ -115,14 +115,25 @@ public class ApplicationService {
         if (!gimmeId.userIdToOrgId(userID).equals(internshipPostRepository.findById(application.getInternshipPostId()).orElseThrow(IllegalAccessError::new).getOrganizationId())){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"not yourssss");
         }
+        if (applicationRepository.findById(appId).orElseThrow(IllegalAccessError::new).getStatus().equals(Status.WITHDRAWN)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"чамд эрх чинь байхгүй байнаа ");
+        }
         application.setStatus(status.status());
         applicationRepository.save(application);
     }
 
     //applicaiton-аа сурагч нь өөрөө татгалзах
-    public void updateApplicationStatusByStudent(Long id) {
-        isApplicationExist(id);
-        Application application = applicationRepository.getReferenceById(id);
+    public void updateApplicationStatusByStudent(Long userId,Long appId) {
+        isItExist.isStudentByUserId(userId);
+        isApplicationExist(appId);
+        Application application = applicationRepository.getReferenceById(appId);
+
+        boolean hasPermission = studentRepository.findByUserId(userId).getStudentId().equals(application.getStudentId());
+        log.info("чамдэрх {} ба чиний student ID{} ба чиний app-д хариу student id {}",hasPermission,studentRepository.findByUserId(userId).getStudentId(),application.getStudentId());
+        if (!hasPermission){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чинийх биш байнаа хө");
+        }
+        log.info("энд байна 5");
         application.setStatus(Status.WITHDRAWN);
         applicationRepository.save(application);
     }
