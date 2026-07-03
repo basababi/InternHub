@@ -22,14 +22,14 @@ public class ApplicationApi {
     @Autowired
     private ApplicationService applicationService;
     //тухайн суралцагч нь application илгээнэ үүсгэнэ
-    @PostMapping
-    public Application createApplication(@AuthenticationPrincipal User user, @RequestBody RequestApplication request){
-        return  applicationService.createApplication(request);
+    @PostMapping("/{postId}")
+    public Application createApplication(@AuthenticationPrincipal User user,@PathVariable Long postId ,@RequestBody RequestApplication request){
+        return  applicationService.createApplication(user.getUserId(), postId ,request);
     }
     //компани эсвэл багш нь тухайн сурагчийн application-ийг илүү дэлгэрэнгүй cv шиг байдлаар авна
-    @GetMapping("/{id}")
-    public ResponseApplicationDetail getApplicationDetail(@AuthenticationPrincipal User user, @PathVariable Long applicationId){
-        return applicationService.getApplicationDetail(applicationId);
+    @GetMapping("/{appId}")
+    public ResponseApplicationDetail getApplicationDetail(@AuthenticationPrincipal User user, @PathVariable Long appId){
+        return applicationService.getApplicationDetail(user.getUserId(),appId);
     }
     //Компани нь ирсэн application-ийг шүүгээд төлвийг нь өөрчилж болдог болгов
     @PutMapping("/{id}/")

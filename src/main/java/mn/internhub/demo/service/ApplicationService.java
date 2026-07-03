@@ -36,18 +36,18 @@ public class ApplicationService {
 
 
     //application хүсэлт үүсгэнэ post
-    public Application createApplication(RequestApplication request) {
-        boolean isPostExist = internshipPostRepository.existsById(request.internshipPostId());
+    public Application createApplication(Long userId, Long postId, RequestApplication request) {
+        boolean isPostExist = internshipPostRepository.existsById(postId);
         if (!isPostExist){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"зар чинь байхгүй байнаа хө");
         }
-        boolean isBanned = userRepository.findById(studentRepository.findById(request.studentId()).orElseThrow(IllegalAccessError::new).getUserId()).orElseThrow(IllegalAccessError::new).getStatus().equals(UserStatus.BANNED);
+        boolean isBanned = userRepository.findById(userId).orElseThrow(IllegalAccessError::new).getStatus().equals(UserStatus.BANNED);
         if (isBanned){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"ээ чи бандуулсан байна шдээ");
         }
         Application application = Application.builder()
-                .studentId(request.studentId())
-                .internshipPostId(request.internshipPostId())
+                .studentId(userId)
+                .internshipPostId(postId)
                 .status(Status.PENDING)
                 .coverLetter(request.coverLetter())
                 .paymentStatus(PaymentStatus.SUCCESS)
@@ -57,7 +57,7 @@ public class ApplicationService {
     }
 
     // багш эсвэл комнаны нь тухайн application-ийг илүү дэлгэрэнгүй харна үүнд нв сурагчийн дэлгэрэнгүй мэдээлэл орно.
-    public ResponseApplicationDetail getApplicationDetail(Long applicationId) {
+    public ResponseApplicationDetail getApplicationDetail( Long userId,Long applicationId) {
         Application application = applicationRepository.findById(applicationId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found application"));
         Student student = studentRepository.findByUserId(application.getStudentId());
         return ResponseApplicationDetail.builder()
