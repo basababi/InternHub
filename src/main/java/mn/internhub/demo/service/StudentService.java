@@ -6,6 +6,7 @@ import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.repository.*;
+import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,8 @@ public class StudentService {
     private OrganizationRepository organizationRepository;
     @Autowired
     private ApplicationRepository applicationRepository;
+    @Autowired
+    private isItExist isItExist;
 
     public Student updateProfile( Long id,UpdateProfileRequest updateRequest) {
         boolean userExist = userRepository.existsById(id);
@@ -72,18 +75,9 @@ public class StudentService {
     }
 
     //сурагч нь өөрийн мэдээлэлээ авна
-    public Student getStudentProfile(Long userId, Long id) {
-        boolean isTeacher = teacherRepository.existsByUserId(userId);
-        boolean isOrganization = organizationRepository.existsByUserId(userId);
-        if(!isTeacher && !isOrganization){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Access denied");
-        }
-        boolean existStudent = studentRepository.existsById(id);
-        if(!existStudent) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user doesn't found");
-        }
-        log.info("Сурагчийн мэдээллийг явуулсан");
-        return studentRepository.findById(id).orElseThrow(IllegalStateException::new);
+    public Student getStudentProfile(Long studentId){
+        isItExist.isStudentExistByStudentId(studentId);
+        return studentRepository.findById(studentId).orElseThrow(IllegalStateException::new);
     }
     //тухайн сурагчийн илгээсэн бүх ажлийн хүсэлтийг харуулна
     public List<Application> getApplications(User user){

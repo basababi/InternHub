@@ -37,9 +37,9 @@ public class StudentApi {
         return studentService.updateProfile(user.getUserId(), updateRequest);
     }
     //сурагчийн мэдээллийг багш, ажил олгогч нь дэлгэрэнгүй харах ингэхдээ тухайн сурагчийн student_id нь авах байдлаар
-    @GetMapping("/{id}")
-    public Student getStudentProfile(@AuthenticationPrincipal User user, @PathVariable Long id){
-        return studentService.getStudentProfile(user.getUserId(), id);
+    @GetMapping("/{studentId}")
+    public Student getStudentProfile(@AuthenticationPrincipal User user, @PathVariable Long studentId){
+        return studentService.getStudentProfile(studentId);
     }
     //тухайн сурагч нь өөрийн явуулсан анкетүүдийн мэдээллийг авах
     @GetMapping("/application")

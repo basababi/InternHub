@@ -1,5 +1,6 @@
 package mn.internhub.demo.api;
 
+import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.organizationApiDto.RequestOwnprofileUpdate;
 import mn.internhub.demo.api.dto.organizationApiDto.ResponseGetAllOrganization;
 import mn.internhub.demo.data.OrganizationReview;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/organization")
 public class OrganizationApi {
@@ -26,6 +28,7 @@ public class OrganizationApi {
     //Тухайн байгууллагын мэдээллийг дэлгэрэнгүй харах
     @GetMapping("/{orgId}")
     public Organizations getOrganizationById(@PathVariable Long orgId){
+        log.info("энэ ажиллаж байгаа шдээээээ");
         return organizationService.getOrganizationById(orgId);
     }
     //тухайн байгууллаг нь өөрийн мэдээллээ/профайлыг харах
@@ -33,7 +36,7 @@ public class OrganizationApi {
     public Organizations getOrgProfile(@AuthenticationPrincipal User user){
         return organizationService.getOrgProfile(user.getUserId());
     }
-    //өөрийн мэдээллийг өөрчлөх
+    //өөрийн мэдээллийг өөрчлөх ингэхдээ orgId
     @PutMapping("/profile")
     public Organizations updateOrgProfile(@AuthenticationPrincipal User user, @RequestBody RequestOwnprofileUpdate request){
         return organizationService.updateOrgProfile(user.getUserId(), request);

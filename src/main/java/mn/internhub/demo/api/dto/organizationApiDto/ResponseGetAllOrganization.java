@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record ResponseGetAllOrganization(
+        Long organizationId,
         String organizationName,
         String address,
         String city,

@@ -7,6 +7,7 @@ import mn.internhub.demo.data.OrganizationReview;
 import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.repository.OrganizationRepository;
 import mn.internhub.demo.repository.OrganizationReviewRepository;
+import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -23,13 +24,16 @@ public class OrganizationService {
     private OrganizationRepository organizationRepository;
     @Autowired
     private OrganizationReviewRepository organizationReviewRepository;
+    @Autowired
+    private isItExist isItExist;
 
     //Нийтэд ил харагдах байдлаар бүх байгуулгын мэдээллийг авах
     public List<ResponseGetAllOrganization> getAllOrganization() {
         List<Organizations> allOrganizations = organizationRepository.findAll();
-        List<ResponseGetAllOrganization> publicAllOrganization = allOrganizations.stream()
+        return allOrganizations.stream()
                 .map(perOrganization ->{
                     return ResponseGetAllOrganization.builder()
+                            .organizationId(perOrganization.getOrganizationId())
                             .organizationName(perOrganization.getOrganizationName())
                             .address(perOrganization.getAddress())
                             .city(perOrganization.getCity())
@@ -39,22 +43,20 @@ public class OrganizationService {
                             .build();
                 })
                 .toList();
-        return publicAllOrganization;
     }
     //тодорхой нэг байгууллагын дэлгэрэнгүй мэдээллийг харах
     public Organizations getOrganizationById(Long orgId) {
-        isOrg(orgId);
+        isItExist.isOrgExistByOrgId(orgId);
         return organizationRepository.findById(orgId).orElseThrow(IllegalAccessError::new);
     }
     //өөрийн мэдээллээ харах
     public Organizations getOrgProfile(Long userId) {
-        isOrg(userId);
-        log.info("энэ хүртэл бол амжилттай");
+        isItExist.isOrgByUserId(userId);
         return organizationRepository.findByUserId(userId);
     }
     //өөрийн мэдээллийг оруулах/өөрчлөх
     public Organizations updateOrgProfile(Long userId, RequestOwnprofileUpdate request){
-        isOrg(userId);
+        isItExist.isOrgByUserId(userId);
         Organizations organization = organizationRepository.findByUserId(userId);
         if(request.organizationName() != null){
             organization.setOrganizationName(request.organizationName());
@@ -80,21 +82,14 @@ public class OrganizationService {
         return organizationRepository.save(organization);
     }
     //тухайн байгуулгын сэтгэгдэл үнэлгээг харах
-    public List<OrganizationReview> getOrgReview(long id) {
-        isOrg(id);
-        Long organizationId = organizationRepository.findByUserId(id).getOrganizationId();
+    public List<OrganizationReview> getOrgReview(long orgId) {
+        isItExist.isOrgExistByOrgId(orgId);
+        Long organizationId = organizationRepository.findByUserId(orgId).getOrganizationId();
         return organizationReviewRepository.findAllByOrganizationId(organizationId);
     }
-    //helper function
-    public void isOrg(Long userId){
-        boolean isOrg = organizationRepository.existsByUserId(userId);
-        if (!isOrg){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Not acceptable");
-        }
-    }
 
-//бүх бүртгэлтэй байгаа байгуллагын тоог авна
+    //бүх бүртгэлтэй байгаа байгуллагын тоог авна
     public Long getAllOrgNxum() {
-        return organizationRepository.count();
-    }
+            return organizationRepository.count();
+        }
 }
