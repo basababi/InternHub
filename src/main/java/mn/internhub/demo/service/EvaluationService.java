@@ -131,7 +131,7 @@ public class EvaluationService {
         isItExist.isStudentByUserId(userId);
         Long studentId = gimmeId.userIdToStudentId(userId);
         //сурагч дээр гарсан бүх үнэлгээг авах
-        List<Evaluation> evaluations = evaluationRepository.findAllByStudentId(studentId+4);
+        List<Evaluation> evaluations = evaluationRepository.findAllByStudentId(studentId);
         return evaluations.stream()
                 .map(evaluation -> {
                      String orgName = organizationRepository.findById(evaluation.getOrganizationId()).orElseThrow(IllegalAccessError::new).getOrganizationName();
