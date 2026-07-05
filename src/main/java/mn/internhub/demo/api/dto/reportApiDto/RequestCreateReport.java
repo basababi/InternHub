@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public record RequestCreateReport(
         String title,
-        Status status,
-        Long teacherId
+        String description
 ) {
 }
+    

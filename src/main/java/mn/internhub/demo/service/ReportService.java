@@ -5,11 +5,13 @@ import mn.internhub.demo.api.dto.reportApiDto.RequestCreateReport;
 import mn.internhub.demo.api.dto.reportApiDto.RequestReviewReport;
 import mn.internhub.demo.api.dto.reportApiDto.RequestUpdateReport;
 import mn.internhub.demo.data.Report;
+import mn.internhub.demo.data.User;
 import mn.internhub.demo.data.enums.Status;
 import mn.internhub.demo.repository.ReportRepository;
 import mn.internhub.demo.repository.StudentRepository;
 import mn.internhub.demo.repository.TeacherRepository;
 import mn.internhub.demo.repository.UserRepository;
+import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.parameters.P;
@@ -30,34 +32,31 @@ public class ReportService {
     private StudentRepository studentRepository;
     @Autowired
     private TeacherRepository teacherRepository;
+    @Autowired
+    private isItExist isItExist;
 
     //сурагч нь тайлангаа багшруу явуулах
-    public Report createReport(Long userId, RequestCreateReport request) {
-        boolean isUserExist = studentRepository.existsByUserId(userId);
-        if (!isUserExist){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Student doesn't found");
-        }
-        isStudentExists(userId);
-        Long studentId = studentRepository.findByUserId(userId).getStudentId();
+    public Report createReport(User user, RequestCreateReport request) {
+        isItExist.isStudentByUserId(user.getUserId());
+        Long studentId = studentRepository.findByUserId(user.getUserId()).getStudentId();
+        Long teacherId = studentRepository.findById(studentId).orElseThrow(IllegalAccessError::new).getTeacherId();
+        log.info("багшийн id:{} {} teacher: {}",teacherId, studentRepository.findById(studentId).orElseThrow(IllegalAccessError::new).getTeacherId());
         Report report = Report.builder()
-                .teacherId(request.teacherId())
+                .teacherId(teacherId)
                 .studentId(studentId)
                 .title(request.title())
+                .description(request.description())
                 .status(Status.PENDING)
-                .submittedAt(LocalDate.now())
+                .createdAt(LocalDate.now())
                 .build();
         reportRepository.save(report);
         return report;
     }
     //сурагч нь өөрйин явуулсан тайлангаа авах
     public List<Report> getStudentReport(Long userId) {
-        isStudentExists(userId);
-        log.info("нэвтэрсэн");
+        isItExist.isStudentByUserId(userId);
         Long studentId = studentRepository.findByUserId(userId).getStudentId();
-        log.info("id авсан");
-        List<Report> ownReports = reportRepository.findAllByStudentId(studentId);
-        log.info("report авсан");
-        return ownReports;
+        return reportRepository.findAllByStudentId(studentId);
     }
     //тайланг id-гаар нь авах
     public Report getReportById(Long userId, Long id) {

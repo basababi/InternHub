@@ -22,16 +22,16 @@ public class ReportApi {
     //Сурагч нь тайлан илгээх
     @PostMapping
     public Report createReport(@AuthenticationPrincipal User user, @RequestBody RequestCreateReport request){
-        return reportService.createReport(user.getUserId(), request);
+        return reportService.createReport(user, request);
     }
     //сурагч нь өөрийн явуулсан тайлангаа харах
     @GetMapping
-    public List<Report> getStudentReports(@AuthenticationPrincipal User user){
-        return reportService.getStudentReport(user.getUserId());
+    public List<Report> getStudentReports(@AuthenticationPrincipal User userId){
+        return reportService.getStudentReport(userId);
     }
     //тайланг id-гаар нь авах
-    @GetMapping("/{id}")
-    public Report getReportById(@AuthenticationPrincipal User user, @PathVariable Long id){
+    @GetMapping("/{reportId}")
+    public Report getReportById(@AuthenticationPrincipal User user, @PathVariable Long reportId){
         return reportService.getReportById(user.getUserId(), id);
     }
     //тайланг сурагч нь өөрчилөх засах тухайн сурагч нь

@@ -19,11 +19,13 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
     private Long reportId;
-    private Long teacherId;
 
+    private Long teacherId;
     private Long studentId;
     private String title;
     private Status status;
+    private String description;
     private String teacherComment;
-    private LocalDate submittedAt;
+    private LocalDate createdAt;
+    private LocalDate approvedAt;
 }
