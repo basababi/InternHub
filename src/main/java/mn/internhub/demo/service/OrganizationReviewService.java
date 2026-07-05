@@ -65,7 +65,7 @@ public class OrganizationReviewService {
     //тухайн байгууллаг дээр ирсэн бүх үнэлгээг сэтгэгдэл олон нийт харах
     public List<OrganizationReview> getAllReview(Long orgId) {
         isItExist.isOrgExistByOrgId(orgId);
-        return organizationReviewRepository.findAllByOrganizationReviewId(orgId);
+        return organizationReviewRepository.findAllByOrganizationId(orgId);
     }
     //сурагч нь оруулсан үнэлгээгээ засах
     public OrganizationReview updateReview(Long userId, Long revId, RequestUpdateReview request) {
