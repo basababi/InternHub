@@ -1,5 +1,6 @@
 package mn.internhub.demo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.OrganizationReviewApi;
 import mn.internhub.demo.api.dto.OrganizationReviewApi.RequestPostReview;
 import mn.internhub.demo.api.dto.OrganizationReviewApi.RequestUpdateReview;
@@ -22,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 public class OrganizationReviewService {
     @Autowired
@@ -49,7 +51,7 @@ public class OrganizationReviewService {
 
         OrganizationReview review = OrganizationReview.builder()
                 .organizationId(orgId)
-                .studentName(request.isanonymous()?"Anonymous"+sequence:student.getFirstName()+student.getLastName())
+                .studentName(request.isanonymous()?"Anonymous"+sequence:student.getFirstName()+" "+student.getLastName())
                 .studentId(studentId)
                 .rating(request.rating())
                 .comment(request.comment())
@@ -57,6 +59,7 @@ public class OrganizationReviewService {
                 .createdAt(LocalDate.now())
                 .build();
         organizationReviewRepository.save(review);
+        log.info("энэ хүртэл ирлээ 6");
         return review;
     }
     //тухайн байгууллаг дээр ирсэн бүх үнэлгээг сэтгэгдэл олон нийт харах

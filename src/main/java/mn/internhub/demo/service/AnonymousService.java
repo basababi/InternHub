@@ -16,12 +16,12 @@ public class AnonymousService {
                     .anonymousID(123L)
                     .lastSequence(10000L)
                     .build();
-
             return anonymousRepository.save(newAnonymous);
         });
         Long sequence = anonymous.getLastSequence();
         sequence= sequence+1;
-        anonymous.setAnonymousID(sequence);
+        anonymous.setLastSequence(sequence);
+        anonymousRepository.save(anonymous);
         return anonymous.getLastSequence();
 
     }
