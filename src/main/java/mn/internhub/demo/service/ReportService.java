@@ -59,23 +59,52 @@ public class ReportService {
         return reportRepository.findAllByStudentId(studentId);
     }
     //тайланг id-гаар нь авах
-    public Report getReportById(Long userId, Long id) {
-        boolean isTeacher = teacherRepository.existsByUserId(userId);
-        if (!isTeacher){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"Not acceptable");
+    public Report getReportById(Long userId, Long reportId) {
+        //эхлээд тайлан нь байгаа эсхийг нь шалгаад
+        boolean isExist = reportRepository.existsById(reportId);
+        if (!isExist){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"тайлан чинь байхгүй байнаа хө");
         }
-        return reportRepository.findById(id).orElseThrow(IllegalAccessError::new);
+        //нэвтэрсэн хэрэглэгч нь багш эсвэл сурагч эсхийг нь шалгаад
+        boolean isStudent = studentRepository.existsByUserId(userId);
+        boolean isTeacher = teacherRepository.existsByUserId(userId);
+        //сурагч эсхйиг нь шалгаад
+        if(isStudent){
+            //тайланг хийсэн сурагч мөн эсхийг нь шалгаад
+            boolean isOwner = studentRepository.findByUserId(userId).getStudentId().equals(reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new).getStudentId());
+            if (!isOwner){
+                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чиний тайлан биш байнаа хө");
+            }
+        }
+        //багш мөн эсхийг нь шалгаад
+        else if (isTeacher){
+            //нэвтэрсэн багш нь тайлан дээрх багш мөн эсэх
+            boolean relatedTeacher = teacherRepository.findByUserId(userId).getTeacherId().equals(reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new).getTeacherId());
+            if (!relatedTeacher){
+                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чиний сурагчийн тайлан биш байнаа хө");
+            }
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"хэн бээ чи");
+        }
+        return reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new);
     }
     //тухайн сурачг нь өөрийн оруулсан тайлангаа засах
     public Report updateReport(Long userId,Long reportId, RequestUpdateReport request) {
-        isStudentExists(userId);
-        Long studentId = studentRepository.findByUserId(userId).getStudentId();
-        Report report = reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new);
-        if(report.getStudentId() != studentId){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Not found ");
+        isItExist.isStudentByUserId(userId);
+        if (!reportRepository.existsById(reportId)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"doesn't found");
         }
+        Long studentId = studentRepository.findByUserId(userId).getStudentId();
+        if (!reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new).getStudentId().equals(studentId)){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чинийх биш байна");
+        }
+        Report report = reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new);
         if(request.title() != null){
-            report.setTitle(report.getTitle());
+            report.setTitle(request.title());
+        }
+        if (request.description() != null){
+            report.setDescription(request.description());
         }
         reportRepository.save(report);
         return report;
@@ -91,26 +120,20 @@ public class ReportService {
     }
     //багш нь тайланг үзсэний дараагаар тайлбар гэх мэт зүйл оруулна
     public Report reviewReport(Long userId,long reportId, RequestReviewReport request) {
-        boolean isTeacherExist = teacherRepository.existsByUserId(userId);
-        if (!isTeacherExist){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"not found");
-        }
+        isItExist.isTeacherByUserId(userId);
         boolean isReportExist = reportRepository.existsById(reportId);
         if (!isReportExist){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Report doesn't found");
         }
+
         Report report = reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new);
+
         report.setTeacherComment(request.teacherComment());
+        if (request.status().equals(Status.ACCEPTED)) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "аль хэдийн хүлээн авсан тайлан байна");
+        }
+        report.setStatus(report.getStatus());
         reportRepository.save(report);
         return report;
     }
-
-    //helper function
-    public void isStudentExists(Long userId){
-        boolean isExists = studentRepository.existsByUserId(userId);
-        if (!isExists){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Not found");
-        }
-    }
-
 }

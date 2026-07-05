@@ -26,18 +26,18 @@ public class ReportApi {
     }
     //сурагч нь өөрийн явуулсан тайлангаа харах
     @GetMapping
-    public List<Report> getStudentReports(@AuthenticationPrincipal User userId){
-        return reportService.getStudentReport(userId);
+    public List<Report> getStudentReports(@AuthenticationPrincipal User user){
+        return reportService.getStudentReport(user.getUserId());
     }
     //тайланг id-гаар нь авах
     @GetMapping("/{reportId}")
     public Report getReportById(@AuthenticationPrincipal User user, @PathVariable Long reportId){
-        return reportService.getReportById(user.getUserId(), id);
+        return reportService.getReportById(user.getUserId(), reportId);
     }
     //тайланг сурагч нь өөрчилөх засах тухайн сурагч нь
-    @PutMapping("/{id}")
-    public Report updateReport(@AuthenticationPrincipal User user,@PathVariable Long id , @RequestBody RequestUpdateReport request){
-        return reportService.updateReport(user.getUserId(),id , request);
+    @PutMapping("/{reportId}")
+    public Report updateReport(@AuthenticationPrincipal User user,@PathVariable Long reportId , @RequestBody RequestUpdateReport request){
+        return reportService.updateReport(user.getUserId(),reportId , request);
     }
     //багш нь өөр дээр нь ирсэн тайлангуудыг нь харах pending төлөвтай байгаа зүйлсийг
     @GetMapping("/pending")
@@ -47,6 +47,7 @@ public class ReportApi {
     //багш нь тайланг үзсэний дараагаар тайлбар гэх мэт зүйл оруулна
     @PutMapping("/{reportId}/review")
     public Report reviewReports(@AuthenticationPrincipal User user,@PathVariable Long reportId ,@RequestBody RequestReviewReport request){
+
         return reportService.reviewReport(user.getUserId(), reportId,request);
     }
 }
