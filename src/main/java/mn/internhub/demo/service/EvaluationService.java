@@ -33,6 +33,8 @@ public class EvaluationService {
     private ApplicationRepository applicationRepository;
     @Autowired
     private InternshipPostRepository internshipPostRepository;
+    @Autowired
+    private TeacherRepository teacherRepository;
 
     //тухайн байгууллаг нь өөр дээр нь дадлга хийсэн сурагчийн үнэлэх
     public Evaluation createEvaluation(Long userId,Long appId, RequestEvaluation request) {
@@ -48,7 +50,7 @@ public class EvaluationService {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"танай байгууллаг үүнийг эхлээд зөвшөөрөх ёстой");
         }
         //тухайн application-д хариалагдах сурагчийн id-ийг нь авах
-        Long studentId =  applicationRepository.findById(appId).orElseThrow(IllegalAccessError::new).getStudentId();;
+        Long studentId =  applicationRepository.findById(appId).orElseThrow(IllegalAccessError::new).getStudentId();
         Evaluation evaluation = Evaluation.builder()
                 .organizationId(gimmeId.userIdToOrgId(userId))
                 .studentId(studentId)
@@ -122,9 +124,27 @@ public class EvaluationService {
     }
     //тухайн сурагчийн нүлгээг сурагч болон багш нь харах
     public Evaluation getEvaluationById(Long userId, Long evaId) {
-        isItExist.isStudentByUserId(userId);
-        isItExist.isTeacherExistByTeacherId(userId);
-        return evaluationRepository.findById(evaId).orElseThrow(IllegalAccessError::new);
+        if (!evaluationRepository.existsById(evaId)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"олсонгүйй");
+        }
+        boolean isStudent = studentRepository.existsByUserId(userId);
+        boolean isTeacher = teacherRepository.existsByUserId(userId);
+        if (isStudent){
+            //тухайн үнэлгээний сурагчийн id нь нэвтэрсэн сурагчийн id-тай таарахгүй байвал
+            if (!evaluationRepository.findById(evaId).orElseThrow(IllegalAccessError::new).getStudentId().equals(studentRepository.findByUserId(userId).getStudentId())){
+                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чинийх биш байшд");
+            }
+        }
+        else if (isTeacher){
+            //хандаж буй үнэлгээний холбогдох сурагчийн холбогдох багшийн id-тай нэвтэрсэн багшийн id-тай таарч байгаа эсхийш шалгаж байна
+            Evaluation evaluation = evaluationRepository.findById(evaId).orElseThrow(() -> new IllegalArgumentException("үнэлгээ олдсонгүй"));
+            Student student = studentRepository.findById(evaluation.getStudentId()).orElseThrow(() -> new IllegalArgumentException("сурагч олдсонгүй"));
+            Teacher teacher = teacherRepository.findByUserId(userId);
+            if (student.getTeacherId().equals(teacher.getTeacherId())){
+                throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чи багш нь биш байна");
+            }
+        }
+        return evaluationRepository.findById(evaId).orElseThrow(()->new IllegalArgumentException("үнэлгээ олдсонгүэ"));
     }
     //сурагч нь ерөнхий байдлаар өмнө хийж байсан үнэлгээнүүдээ харна
     public List<ResponseEvaluation> getAllEvaluation(Long userId) {
