@@ -1,10 +1,8 @@
 package mn.internhub.demo.service;
 
+import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.evaluationApiDto.*;
-import mn.internhub.demo.data.Application;
-import mn.internhub.demo.data.Evaluation;
-import mn.internhub.demo.data.InternshipPost;
-import mn.internhub.demo.data.User;
+import mn.internhub.demo.data.*;
 import mn.internhub.demo.data.enums.EvaluationStatus;
 import mn.internhub.demo.data.enums.Status;
 import mn.internhub.demo.repository.*;
@@ -18,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 public class EvaluationService {
     @Autowired
@@ -38,14 +37,21 @@ public class EvaluationService {
     //тухайн байгууллаг нь өөр дээр нь дадлга хийсэн сурагчийн үнэлэх
     public Evaluation createEvaluation(Long userId,Long appId, RequestEvaluation request) {
         isItExist.isOrgByUserId(userId);
+        //нэвтэрсэн байгуллаг нь хандаж буй application-ий хандах эрх бүхий байгуллаг мөн эсхийг нь шалгах
         Long internshipPostId = applicationRepository.findById(appId).orElseThrow(IllegalAccessError::new).getInternshipPostId();
         boolean thisApplicationIsRelatedToThisOrganization = internshipPostRepository.findById(internshipPostId).orElseThrow(IllegalAccessError::new).getOrganizationId().equals(gimmeId.userIdToOrgId(userId));
         if (!thisApplicationIsRelatedToThisOrganization){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чинийх биш байшдээээ");
         }
+        boolean isAccepted = applicationRepository.findById(appId).orElseThrow(IllegalAccessError::new).getStatus().equals(Status.ACCEPTED);
+        if (!isAccepted){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"танай байгууллаг үүнийг эхлээд зөвшөөрөх ёстой");
+        }
+        //тухайн application-д хариалагдах сурагчийн id-ийг нь авах
+        Long studentId =  applicationRepository.findById(appId).orElseThrow(IllegalAccessError::new).getStudentId();;
         Evaluation evaluation = Evaluation.builder()
                 .organizationId(gimmeId.userIdToOrgId(userId))
-                .studentId(request.studentId())
+                .studentId(studentId)
                 .applicationId(appId)
                 .score(request.score())
                 .comment(request.comment())
