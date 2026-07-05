@@ -98,6 +98,11 @@ public class EvaluationService {
         if (!isEvaExist){
             throw  new ResponseStatusException(HttpStatus.NOT_FOUND,"өөрчлөх гээд байгаа үнэлгээ чинь байхгүй байншдэ");
         }
+        boolean isOwner = internshipPostRepository.findById(applicationRepository.findById(evaId).orElseThrow(IllegalAccessError::new).getInternshipPostId()).orElseThrow(IllegalAccessError::new).getOrganizationId().equals(gimmeId.userIdToOrgId(userId));
+        if (!isOwner){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чиний эрх чинь хүрэхгүй байна");
+        }
+
         Evaluation evaluation = evaluationRepository.findById(evaId).orElseThrow(IllegalAccessError::new);
         if (request.comment() != null){
             evaluation.setComment(request.comment());
