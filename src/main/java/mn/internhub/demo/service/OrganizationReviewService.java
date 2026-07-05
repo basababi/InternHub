@@ -51,11 +51,11 @@ public class OrganizationReviewService {
 
         OrganizationReview review = OrganizationReview.builder()
                 .organizationId(orgId)
-                .studentName(request.isanonymous()?"Anonymous"+sequence:student.getFirstName()+" "+student.getLastName())
+                .studentName(request.isAnonymous()?"Anonymous"+sequence:student.getFirstName()+" "+student.getLastName())
                 .studentId(studentId)
                 .rating(request.rating())
                 .comment(request.comment())
-                .isAnonymous(request.isanonymous())
+                .isAnonymous(request.isAnonymous())
                 .createdAt(LocalDate.now())
                 .build();
         organizationReviewRepository.save(review);
@@ -74,8 +74,7 @@ public class OrganizationReviewService {
         if (isBanned){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"ээ чи бандуулцан байна шдэээ");
         }
-        boolean isExistReview = organizationReviewRepository.existsById(revId);
-        if (!isExistReview){
+        if (!organizationReviewRepository.existsById(revId)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"олдсонгүй");
         }
         Long studentId = gimmeId.userIdToStudentId(userId);
@@ -86,14 +85,26 @@ public class OrganizationReviewService {
         long sequence = anonymousService.getSequence();
         Student student = studentRepository.findById(studentId).orElseThrow(IllegalAccessError::new);
 
-        OrganizationReview updated = OrganizationReview.builder()
-                .studentName(request.isAnonymous()?"Anonymous"+sequence:student.getFirstName()+student.getLastName())
-                .rating(request.rating())
-                .comment(request.comment())
-                .isAnonymous(request.isAnonymous())
-                .build();
-        organizationReviewRepository.save(updated);
-        return updated;
+        if (request.isAnonymous()){
+            log.info("aaaaa22");
+            review.setAnonymous(true);
+            review.setStudentName("Anonymous"+sequence);
+        }
+        else if(!request.isAnonymous()) {
+            log.info("aaaaa21");
+            review.setAnonymous(false);
+            review.setStudentName(student.getFirstName()+" "+student.getLastName());
+        }
+        if (request.rating() != null){
+            log.info("aaaaa1");
+            review.setRating(request.rating());
+        }
+        if (request.comment() != null){
+            log.info("aaaaa3");
+            review.setComment(request.comment());
+        }
+        organizationReviewRepository.save(review);
+        return review;
     }
     //сурагч нь үнэлсэн үнэлгээгээ устгах
     public void deleteReview(Long userId, Long revId) {

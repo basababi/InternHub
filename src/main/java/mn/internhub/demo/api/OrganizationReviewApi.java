@@ -28,7 +28,7 @@ public class OrganizationReviewApi {
     }
     //сурагч нь оруулсан үнэлгээгээ засах
     @PutMapping("/{revId}")
-    public OrganizationReview updateReview(@AuthenticationPrincipal User user, @PathVariable Long revId, RequestUpdateReview request){
+    public OrganizationReview updateReview(@AuthenticationPrincipal User user, @PathVariable Long revId, @RequestBody RequestUpdateReview request){
         return organizationReviewService.updateReview(user.getUserId(), revId,request);
     }
     //сурагч нь үнэлсэн үнэлгээгээ устгах
