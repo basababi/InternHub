@@ -3,6 +3,7 @@ package mn.internhub.demo.repository;
 import mn.internhub.demo.data.InternshipPost;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.http.ProblemDetail;
 
 import java.util.List;
 
@@ -11,4 +12,7 @@ public interface InternshipPostRepository extends JpaRepository<InternshipPost,L
 
 
     List<InternshipPost> findAllByRequiredSkillsContaining(String skill);
+
+
+    InternshipPost findByOrganizationId(Long organizationId);
 }

@@ -72,18 +72,25 @@ public class EvaluationService {
                     List<Application> applications = applicationRepository.findAllByInternshipPostIdAndStatus(post.getInternshipPostId(),Status.ACCEPTED);
                     List<AccaptedStudents> students = applications.stream()
                             .map(application -> {
+                                Evaluation eva = evaluationRepository.findByStudentId(application.getStudentId());
+                                EvaluationStatus evaStatus = (eva != null) ? eva.getStatus() : EvaluationStatus.NOT_EVALUATED;
+                                Long evaId = (eva != null) ? eva.getEvaluationId() : null;
+
+                                if (evaStatus == null){
+                                    evaStatus = EvaluationStatus.NOT_EVALUATED;
+                                }
                                 return AccaptedStudents.builder()
                                         .studentId(application.getStudentId())
                                         .firstName(studentRepository.findByUserId(application.getStudentId()).getFirstName())
                                         .lastName(studentRepository.findByUserId(application.getStudentId()).getLastName())
-                                        .status(evaluationRepository.findByStudentId(application.getStudentId()).getStatus())
-                                        .evaluationId(evaluationRepository.findByStudentId(application.getStudentId()).getEvaluationId())
+                                        .status(evaStatus)
+                                        .evaluationId(evaId)
                                         .build();
                                     }
                             )
                             .toList();
                     return ResponseGetAppEva.builder()
-                            .applicationId(post.getInternshipPostId())
+                            .internshipPostId(post.getInternshipPostId())
                             .title(post.getTitle())
                             .vacancyCount(post.getVacancyCount())
                             .students(students)
@@ -123,15 +130,17 @@ public class EvaluationService {
     public List<ResponseEvaluation> getAllEvaluation(Long userId) {
         isItExist.isStudentByUserId(userId);
         Long studentId = gimmeId.userIdToStudentId(userId);
-        List<Evaluation> evaluations = evaluationRepository.findAllByStudentId(studentId);
+        //сурагч дээр гарсан бүх үнэлгээг авах
+        List<Evaluation> evaluations = evaluationRepository.findAllByStudentId(studentId+4);
         return evaluations.stream()
                 .map(evaluation -> {
-                    String orgName = organizationRepository.findById(evaluation.getOrganizationId()).orElseThrow(IllegalAccessError::new).getOrganizationName();
-                    String internshipPostName = internshipPostRepository.findById(applicationRepository.findByInternshipPostId(evaluation.getEvaluationId()).getInternshipPostId()).orElseThrow(IllegalAccessError::new).getTitle();
+                     String orgName = organizationRepository.findById(evaluation.getOrganizationId()).orElseThrow(IllegalAccessError::new).getOrganizationName();
+                     InternshipPost post = internshipPostRepository.findById(applicationRepository.findById(evaluation.getApplicationId()).orElseThrow(IllegalAccessError::new).getInternshipPostId()).orElseThrow(IllegalAccessError::new);
+                     String postTitle = post.getTitle();
                     return ResponseEvaluation.builder()
                             .evaluationId(evaluation.getEvaluationId())
                             .organizationName(orgName)
-                            .InternshipPostTitle(internshipPostName)
+                            .InternshipPostTitle(postTitle)
                             .score(evaluation.getScore())
                             .build();
                         }
@@ -140,3 +149,4 @@ public class EvaluationService {
                 .toList();
     }
 }
+

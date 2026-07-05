@@ -9,6 +9,7 @@ import java.util.List;
 
 @Builder
 public record ResponseGetAppEva(
+        Long internshipPostId,
         Long applicationId,
         String title,
         Integer vacancyCount,

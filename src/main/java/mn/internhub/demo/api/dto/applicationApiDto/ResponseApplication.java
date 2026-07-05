@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 // энэ дангаараа ашиглахгүй дээ
 @Builder
 public record ResponseApplication(
+        Long applicationId,
         Long userId,
         String firstName,
         String lastName,

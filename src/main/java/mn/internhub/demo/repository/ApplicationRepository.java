@@ -20,4 +20,6 @@ public interface ApplicationRepository extends JpaRepository<Application,Long> {
     List<Application> findAllByInternshipPostIdAndStatus(Long internshipPostId, Status status);
 
     Application findByInternshipPostId(Long evaluationId);
+
+    Application findByStudentId(Long studentId);
 }

@@ -51,7 +51,7 @@ public class ApplicationService {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"ээ чи бандуулсан байна шдээ");
         }
         Application application = Application.builder()
-                .studentId(userId)
+                .studentId(gimmeId.userIdToStudentId(userId))
                 .internshipPostId(postId)
                 .status(Status.PENDING)
                 .coverLetter(request.coverLetter())
@@ -139,7 +139,7 @@ public class ApplicationService {
     public List<ResponseApplicationsToOrganization> getPendingApplications(Long userId) {
         isItExist.isOrgByUserId(userId);
         //тухайн хэрэглэгчийн хариалагдах байгуулгын id-ийг авна
-        Long organizationId = organizationRepository.findByUserId(userId).getOrganizationId();
+        Long organizationId = gimmeId.userIdToOrgId(userId);
         //тэр байгуулгын id-дээр хариалагдаж буй internshipPost-уудийг бүгдийг авна буюу тухайн байгуугын оруулсан заруудыг авна
         List<InternshipPost> internshipPosts = internshipPostRepository.findAllByOrganizationId(organizationId);
         //зар бүр дээр нь ажилна
@@ -153,6 +153,7 @@ public class ApplicationService {
                                     .map(each -> {
                                         Student student = studentRepository.findByUserId(each.getStudentId());
                                         return ResponseApplication.builder()
+                                                .applicationId(each.getApplicationId())
                                                 .userId(student.getUserId())
                                                 .firstName(student.getFirstName())
                                                 .lastName(student.getLastName())
