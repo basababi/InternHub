@@ -19,7 +19,6 @@ public class FileEntity {
     private Long fileId;
 
     private Long reportId;
-    private Long orgId;
     private Long userId;
     private String fileName;
     private String fileType;

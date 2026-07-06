@@ -4,6 +4,7 @@ import mn.internhub.demo.data.FileEntity;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.data.enums.ContentTypes;
 import mn.internhub.demo.repository.FileEntityRepository;
+import mn.internhub.demo.service.helperFunctions.gimmeId;
 import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ public class FileEntityService {
     private FileEntityRepository fileRepository;
     @Autowired
     private isItExist isItExist;
+    @Autowired
+    private gimmeId gimmeId;
 
     //сурагч нь cv файлаа илгээнээ
     public void createCV(User user, MultipartFile file) throws IOException {
@@ -37,4 +40,28 @@ public class FileEntityService {
         fileRepository.save(fileVar);
     }
     //сурагч нь cv-файлаа солих өөрчлөх
+    public Boolean updateCv(Long userId, MultipartFile file){
+        if (!file.isEmpty()){
+            FileEntity cv = fileRepository.findByUserId(userId);
+            cv.setFileName(file.getOriginalFilename());
+            cv.setFileType(file.getContentType());
+            try {
+                cv.setData(file.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            fileRepository.save(cv);
+            return true;
+        }
+        return false;
+    }
+    //өөрйин cv файлыг харах авах
+    public FileEntity getCv(User user) {
+        isItExist.isStudentByUserId(user.getUserId());
+        boolean isOwner = user.getUserId().equals(fileRepository.findByUserId(user.getUserId()).getUserId());
+        if (!isOwner){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чиний файл биш байна");
+        }
+        return fileRepository.findByUserIdAndContentTypes(user.getUserId(),ContentTypes.CV);
+    }
 }

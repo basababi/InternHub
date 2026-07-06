@@ -30,13 +30,15 @@ public class StudentService {
     private ApplicationRepository applicationRepository;
     @Autowired
     private isItExist isItExist;
+    @Autowired
+    private FileEntityService fileEntityService;
 
-    public Student updateProfile(Long id, UpdateProfileRequest updateRequest, MultipartFile file) {
-        boolean userExist = userRepository.existsById(id);
+    public Student updateProfile(Long userId, UpdateProfileRequest updateRequest, MultipartFile file) {
+        boolean userExist = userRepository.existsById(userId);
         if (!userExist) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user doesn't found");
         }
-        Student student = studentRepository.findByUserId(id);
+        Student student = studentRepository.findByUserId(userId);
         if(updateRequest.firstName() != null){
             student.setFirstName(updateRequest.firstName());
         }
@@ -69,6 +71,10 @@ public class StudentService {
         }
         if (updateRequest.teacherId() != null){
             student.setTeacherId(updateRequest.teacherId());
+        }
+
+        if (!fileEntityService.updateCv(userId,file)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"файл байршуулхад алдаа гарлаа");
         }
         studentRepository.save(student);
         return student;

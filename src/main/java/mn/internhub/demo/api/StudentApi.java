@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.studentApiDto.UpdateProfileRequest;
 import mn.internhub.demo.data.Application;
+import mn.internhub.demo.data.FileEntity;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.repository.FileEntityRepository;
@@ -69,5 +70,11 @@ public class StudentApi {
     public void createCv(@AuthenticationPrincipal User user,@RequestParam("file") MultipartFile file) throws IOException {
         fileService.createCV(user, file);
     }
+    //get usercv file
+    @GetMapping("/profile/cv")
+    public FileEntity getCv(@AuthenticationPrincipal User user){
+        return fileService.getCv(user);
+    }
+
 
 }
