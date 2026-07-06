@@ -10,6 +10,7 @@ import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class StudentService {
     @Autowired
     private isItExist isItExist;
 
-    public Student updateProfile( Long id,UpdateProfileRequest updateRequest) {
+    public Student updateProfile(Long id, UpdateProfileRequest updateRequest, MultipartFile file) {
         boolean userExist = userRepository.existsById(id);
         if (!userExist) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user doesn't found");

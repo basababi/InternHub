@@ -6,13 +6,17 @@ import mn.internhub.demo.api.dto.studentApiDto.UpdateProfileRequest;
 import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.User;
+import mn.internhub.demo.repository.FileEntityRepository;
+import mn.internhub.demo.service.FileEntityService;
 import mn.internhub.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -22,6 +26,11 @@ import java.util.List;
 public class StudentApi {
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private FileEntityRepository fileRepository;
+    @Autowired
+    private FileEntityService fileService;
+
     //өөрийн мэдээллийн дэлгэрэнгүйг авах
     @GetMapping("/profile")
     public Student getProfile(@AuthenticationPrincipal User user){
@@ -29,11 +38,11 @@ public class StudentApi {
     }
     //өөрийн мэдээллийг дэлгэрэнгүй үүсгэх/өөрлчөх
     @PutMapping("/profile")
-    public Student updateProfile(@AuthenticationPrincipal User user, @RequestBody UpdateProfileRequest updateRequest){
+    public Student updateProfile(@AuthenticationPrincipal User user, @RequestBody UpdateProfileRequest updateRequest,@RequestParam("file") MultipartFile file ){
         if (updateRequest == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"null");
         }
-        return studentService.updateProfile(user.getUserId(), updateRequest);
+        return studentService.updateProfile(user.getUserId(), updateRequest, file);
     }
     //сурагчийн мэдээллийг багш, ажил олгогч нь дэлгэрэнгүй харах ингэхдээ тухайн сурагчийн student_id нь авах байдлаар
     @GetMapping("/{studentId}")
@@ -55,6 +64,10 @@ public class StudentApi {
     public long getAllStudentNum(){
         return studentService.getAllStudentNum();
     }
-
+    //cv-гээ оруулах
+    @PostMapping("/profile/cv")
+    public void createCv(@AuthenticationPrincipal User user,@RequestParam("file") MultipartFile file) throws IOException {
+        fileService.createCV(user, file);
+    }
 
 }
