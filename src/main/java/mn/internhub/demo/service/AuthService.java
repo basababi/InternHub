@@ -11,10 +11,15 @@ import mn.internhub.demo.data.enums.UserStatus;
 import mn.internhub.demo.repository.*;
 import mn.internhub.demo.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -35,6 +40,8 @@ public class AuthService {
     private OrganizationRepository organizationRepository;
     @Autowired
     private AdminRepository adminRepository;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     public AuthResponse registerStudent(@Valid RegisterStudentRequest request) {
         User user = baseRegister(request.baseRequest());
@@ -109,5 +116,30 @@ public class AuthService {
         return new AuthResponse(token);
     }
 
+    //refresh token
+    public AuthResponse refresh(RequestRefreshToken request) {
+        String email = jwtService.extractUsername(request.token());
+        UserDetails user = userDetailsService.loadUserByUsername(email);
 
+        if(jwtService.isTokenValid(request.token(), user)) {
+            String newToken = jwtService.generateToken(user);
+            return new AuthResponse(newToken);
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
+    /**
+     *
+     */
+    //reset password
+    public ResponseEntity<String> resetPass(User user, RequestPassword request) {
+        if(!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"нууц үг буруу байна");
+        }
+        String hashed = passwordEncoder.encode(request.newPassword());
+        user.setPassword(hashed);
+        userRepository.save(user);
+        return ResponseEntity.ok("Амжилттай нууц үг солигдлоо");
+    }
 }
