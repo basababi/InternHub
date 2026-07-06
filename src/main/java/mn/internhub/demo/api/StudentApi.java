@@ -86,7 +86,11 @@ public class StudentApi {
     public FileEntity getProfileImg(@AuthenticationPrincipal User user){
         return fileService.getProfileImg(user.getUserId());
     }
-
+    //update own profile
+    @PutMapping("/profile/img")
+    public FileEntity updateProfiileImg(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file){
+        return fileService.updateProfileImg(user.getUserId(), file);
+    }
 
 
 

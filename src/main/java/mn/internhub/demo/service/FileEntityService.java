@@ -92,5 +92,21 @@ public class FileEntityService {
         isItExist.isStudentByUserId(userId);
         return fileRepository.findByUserIdAndContentTypes(userId, ContentTypes.PROFILE);
     }
-
+    //update own profile image
+    public FileEntity updateProfileImg(Long userId, MultipartFile file) {
+        isItExist.isStudentByUserId(userId);
+        if(file.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"emptyyyyy");
+        }
+        FileEntity proImg = fileRepository.findByUserId(userId);
+        proImg.setFileName(file.getOriginalFilename());
+        proImg.setFileType(file.getContentType());
+        try {
+            proImg.setData(file.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        fileRepository.save(proImg);
+        return proImg;
+    }
 }
