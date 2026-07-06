@@ -87,4 +87,10 @@ public class FileEntityService {
         }
         return ResponseEntity.ok("ажмилттай");
     }
+    //өөрйин profile зургыг авах
+    public FileEntity getProfileImg(Long userId) {
+        isItExist.isStudentByUserId(userId);
+        return fileRepository.findByUserIdAndContentTypes(userId, ContentTypes.PROFILE);
+    }
+
 }

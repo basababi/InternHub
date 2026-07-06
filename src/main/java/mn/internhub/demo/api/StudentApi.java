@@ -81,6 +81,13 @@ public class StudentApi {
     public ResponseEntity<String> createProfileImage(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file){
         return fileService.createProfileImg(user.getUserId(), file);
     }
+    //өөрйин profile зургыг авах
+    @GetMapping("/profile/img")
+    public FileEntity getProfileImg(@AuthenticationPrincipal User user){
+        return fileService.getProfileImg(user.getUserId());
+    }
+
+
 
 
 }
