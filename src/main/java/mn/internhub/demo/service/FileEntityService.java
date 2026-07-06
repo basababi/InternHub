@@ -68,7 +68,7 @@ public class FileEntityService {
         return fileRepository.findByUserIdAndContentTypes(user.getUserId(),ContentTypes.CV);
     }
 
-    public ResponseEntity<String> createProfileImg(Long userId, MultipartFile file) {
+    public ResponseEntity<String> createProfileImg(Long userId, MultipartFile file, ContentTypes contentTypes) {
         isItExist.isStudentByUserId(userId);
         if (file.isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"emptyy");
@@ -78,7 +78,7 @@ public class FileEntityService {
                     .userId(userId)
                     .fileName(file.getOriginalFilename())
                     .fileType(file.getContentType())
-                    .contentTypes(ContentTypes.PROFILE)
+                    .contentTypes(contentTypes)
                     .data(file.getBytes())
                     .build();
             fileRepository.save(proImg);
@@ -88,17 +88,18 @@ public class FileEntityService {
         return ResponseEntity.ok("ажмилттай");
     }
     //өөрйин profile зургыг авах
-    public FileEntity getProfileImg(Long userId) {
+    public FileEntity getProfileImg(Long userId, ContentTypes contentTypes) {
         isItExist.isStudentByUserId(userId);
-        return fileRepository.findByUserIdAndContentTypes(userId, ContentTypes.PROFILE);
+        return fileRepository.findByUserIdAndContentTypes(userId, contentTypes);
     }
     //update own profile image
-    public FileEntity updateProfileImg(Long userId, MultipartFile file) {
+    public FileEntity updateProfileImg(Long userId, MultipartFile file, ContentTypes contentTypes) {
         isItExist.isStudentByUserId(userId);
         if(file.isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"emptyyyyy");
         }
-        FileEntity proImg = fileRepository.findByUserId(userId);
+        log.info("энэ хүртэл асуудалгүй");
+        FileEntity proImg = fileRepository.findByUserIdAndContentTypes(userId,contentTypes);
         proImg.setFileName(file.getOriginalFilename());
         proImg.setFileType(file.getContentType());
         try {

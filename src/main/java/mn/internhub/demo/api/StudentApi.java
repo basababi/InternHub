@@ -7,6 +7,7 @@ import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.FileEntity;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.User;
+import mn.internhub.demo.data.enums.ContentTypes;
 import mn.internhub.demo.repository.FileEntityRepository;
 import mn.internhub.demo.service.FileEntityService;
 import mn.internhub.demo.service.StudentService;
@@ -79,17 +80,17 @@ public class StudentApi {
     //Post user profile image
     @PostMapping("/profile/img")
     public ResponseEntity<String> createProfileImage(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file){
-        return fileService.createProfileImg(user.getUserId(), file);
+        return fileService.createProfileImg(user.getUserId(), file, ContentTypes.PROFILE);
     }
     //өөрйин profile зургыг авах
     @GetMapping("/profile/img")
     public FileEntity getProfileImg(@AuthenticationPrincipal User user){
-        return fileService.getProfileImg(user.getUserId());
+        return fileService.getProfileImg(user.getUserId(), ContentTypes.PROFILE);
     }
     //update own profile
     @PutMapping("/profile/img")
     public FileEntity updateProfiileImg(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file){
-        return fileService.updateProfileImg(user.getUserId(), file);
+        return fileService.updateProfileImg(user.getUserId(), file, ContentTypes.PROFILE);
     }
 
 
