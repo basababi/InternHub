@@ -11,6 +11,7 @@ import mn.internhub.demo.data.enums.ContentTypes;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+
 @Table(name = "files")
 public class FileEntity {
     @Id
@@ -22,6 +23,8 @@ public class FileEntity {
     private Long userId;
     private String fileName;
     private String fileType;
+
+    @Enumerated(EnumType.STRING)
     private ContentTypes contentTypes;
 
     @Column(columnDefinition = "bytea")

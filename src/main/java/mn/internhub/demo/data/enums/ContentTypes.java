@@ -1,7 +1,13 @@
 package mn.internhub.demo.data.enums;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
+
+
 public enum ContentTypes {
     CV,
-    Report,
-    Logo
+    REPORT,
+    LOGO,
+    PROFILE
 }

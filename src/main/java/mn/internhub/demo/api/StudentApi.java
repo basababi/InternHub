@@ -12,6 +12,7 @@ import mn.internhub.demo.service.FileEntityService;
 import mn.internhub.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,10 +71,15 @@ public class StudentApi {
     public void createCv(@AuthenticationPrincipal User user,@RequestParam("file") MultipartFile file) throws IOException {
         fileService.createCV(user, file);
     }
-    //get usercv file
+    //get userCV file
     @GetMapping("/profile/cv")
     public FileEntity getCv(@AuthenticationPrincipal User user){
         return fileService.getCv(user);
+    }
+    //Post user profile image
+    @PostMapping("/profile/img")
+    public ResponseEntity<String> createProfileImage(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file){
+        return fileService.createProfileImg(user.getUserId(), file);
     }
 
 
