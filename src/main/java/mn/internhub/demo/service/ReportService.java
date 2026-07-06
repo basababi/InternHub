@@ -40,7 +40,6 @@ public class ReportService {
         isItExist.isStudentByUserId(user.getUserId());
         Long studentId = studentRepository.findByUserId(user.getUserId()).getStudentId();
         Long teacherId = studentRepository.findById(studentId).orElseThrow(IllegalAccessError::new).getTeacherId();
-        log.info("багшийн id:{} {} teacher: {}",teacherId, studentRepository.findById(studentId).orElseThrow(IllegalAccessError::new).getTeacherId());
         Report report = Report.builder()
                 .teacherId(teacherId)
                 .studentId(studentId)

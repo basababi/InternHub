@@ -59,7 +59,6 @@ public class OrganizationReviewService {
                 .createdAt(LocalDate.now())
                 .build();
         organizationReviewRepository.save(review);
-        log.info("энэ хүртэл ирлээ 6");
         return review;
     }
     //тухайн байгууллаг дээр ирсэн бүх үнэлгээг сэтгэгдэл олон нийт харах
@@ -86,21 +85,17 @@ public class OrganizationReviewService {
         Student student = studentRepository.findById(studentId).orElseThrow(IllegalAccessError::new);
 
         if (request.isAnonymous()){
-            log.info("aaaaa22");
             review.setAnonymous(true);
             review.setStudentName("Anonymous"+sequence);
         }
         else if(!request.isAnonymous()) {
-            log.info("aaaaa21");
             review.setAnonymous(false);
             review.setStudentName(student.getFirstName()+" "+student.getLastName());
         }
         if (request.rating() != null){
-            log.info("aaaaa1");
             review.setRating(request.rating());
         }
         if (request.comment() != null){
-            log.info("aaaaa3");
             review.setComment(request.comment());
         }
         organizationReviewRepository.save(review);

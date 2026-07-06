@@ -19,21 +19,18 @@ public class AuthApi {
     //оюутан бүртгэх
     @PostMapping("/register/student")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterStudentRequest request) {
-        log.info("сурагчийн өгөгдлийг авсан");
         return ResponseEntity.ok(authService.registerStudent(request));
     }
 
     //багш бүртгэх
     @PostMapping("/register/teacher")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterTeacherRequest request) {
-        log.info("багшийн өгөгдлийг авсан");
         return ResponseEntity.ok(authService.registerTeacher(request));
     }
 
     //байгуулга бүртгэх
     @PostMapping("/register/organization")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterOrganizationRequest request) {
-        log.info("байгууллагын өгөгдлийг авсан");
         return ResponseEntity.ok(authService.registerOrganization(request));
     }
     //админ бүртгэх

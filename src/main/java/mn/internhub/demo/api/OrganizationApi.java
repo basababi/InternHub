@@ -28,7 +28,6 @@ public class OrganizationApi {
     //Тухайн байгууллагын мэдээллийг дэлгэрэнгүй харах
     @GetMapping("/{orgId}")
     public Organizations getOrganizationById(@PathVariable Long orgId){
-        log.info("энэ ажиллаж байгаа шдээээээ");
         return organizationService.getOrganizationById(orgId);
     }
     //тухайн байгууллаг нь өөрийн мэдээллээ/профайлыг харах

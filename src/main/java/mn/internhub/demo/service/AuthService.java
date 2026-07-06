@@ -50,7 +50,6 @@ public class AuthService {
     }
     //багш бүртгүүлэх
     public AuthResponse registerTeacher(@Valid RegisterTeacherRequest request) {
-        log.info("Энэ хүртэл бол ямар ч асуудалгүй явлаа");
         User user = baseRegister(request.baseRequest());
         Teacher teacher = Teacher.builder()
                 .userId(user.getUserId())

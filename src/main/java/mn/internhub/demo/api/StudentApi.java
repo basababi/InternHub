@@ -25,7 +25,6 @@ public class StudentApi {
     //өөрийн мэдээллийн дэлгэрэнгүйг авах
     @GetMapping("/profile")
     public Student getProfile(@AuthenticationPrincipal User user){
-        log.info("байгууллагын өгөгдлийг авсан");
         return studentService.getProfile(user.getUserId());
     }
     //өөрийн мэдээллийг дэлгэрэнгүй үүсгэх/өөрлчөх

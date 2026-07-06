@@ -42,7 +42,6 @@ public class ApplicationApi {
     //тухайн сурагч нь өөрийн илгээсэн application-ийн өөрөө цуцлах
     @PutMapping("/{appId}/withdraw")
     public void updateApplicationStatusByStudent(@AuthenticationPrincipal User user,  @PathVariable Long appId){
-        log.info("энд байна 1");
         applicationService.updateApplicationStatusByStudent(user.getUserId(),appId);
     }
     //тухайн комтани нь өөр дээр нь ирсэн application-ний хүсэлтийг харах
