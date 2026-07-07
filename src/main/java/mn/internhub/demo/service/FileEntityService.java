@@ -5,6 +5,7 @@ import mn.internhub.demo.data.FileEntity;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.data.enums.ContentTypes;
 import mn.internhub.demo.repository.FileEntityRepository;
+import mn.internhub.demo.repository.ReportRepository;
 import mn.internhub.demo.service.helperFunctions.gimmeId;
 import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class FileEntityService {
     private isItExist isItExist;
     @Autowired
     private gimmeId gimmeId;
+    @Autowired
+    private ReportRepository reportRepository;
 
     //сурагч нь cv файлаа илгээнээ
     public void createCV(User user, MultipartFile file) throws IOException {
@@ -109,5 +112,64 @@ public class FileEntityService {
         }
         fileRepository.save(proImg);
         return proImg;
+    }
+
+    public ResponseEntity<String> createReportFile(Long userId, MultipartFile file, ContentTypes contentTypes, Long reportId) {
+        isItExist.isStudentByUserId(userId);
+        boolean isExist = reportRepository.existsById(reportId);
+        if (!isExist){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"байхгүй байна");
+        }
+        boolean isOwner = gimmeId.userIdToStudentId(userId).equals(reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new).getStudentId());
+        if (!isOwner){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"хэн юм бэээ чи");
+        }
+        if (file.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"emptyy");
+        }
+        try {
+            FileEntity proImg = FileEntity.builder()
+                    .userId(userId)
+                    .reportId(reportId)
+                    .fileName(file.getOriginalFilename())
+                    .fileType(file.getContentType())
+                    .contentTypes(contentTypes)
+                    .data(file.getBytes())
+                    .build();
+            fileRepository.save(proImg);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok("ажмилттай");
+
+    }
+
+    public ResponseEntity<String> updateFile(Long userId, Long reportId, MultipartFile file) {
+        isItExist.isStudentByUserId(userId);
+        boolean isExist = reportRepository.existsById(reportId);
+        if (!isExist){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"байхгүй байна");
+        }
+        boolean isOwner = gimmeId.userIdToStudentId(userId).equals(reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new).getStudentId());
+        if (!isOwner){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"хэн юм бэээ чи");
+        }
+        if (file.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"emptyy");
+        }
+        FileEntity fileEntity = fileRepository.findByReportIdAndContentTypes(reportId, ContentTypes.REPORT);
+        try {
+            fileEntity.setData(file.getBytes());
+            fileEntity.setFileName(fileEntity.getFileName());
+            fileEntity.setFileType(file.getContentType());
+            fileRepository.save(fileEntity);
+        }
+        catch (IOException e) {
+        throw new RuntimeException(e);
+
+    }
+        return ResponseEntity.ok("ажмилттай");
+
+
     }
 }

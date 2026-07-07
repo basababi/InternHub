@@ -4,20 +4,23 @@ import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.reportApiDto.RequestCreateReport;
 import mn.internhub.demo.api.dto.reportApiDto.RequestReviewReport;
 import mn.internhub.demo.api.dto.reportApiDto.RequestUpdateReport;
+import mn.internhub.demo.api.dto.reportApiDto.ResponseReport;
+import mn.internhub.demo.data.FileEntity;
 import mn.internhub.demo.data.Report;
 import mn.internhub.demo.data.User;
+import mn.internhub.demo.data.enums.ContentTypes;
 import mn.internhub.demo.data.enums.Status;
-import mn.internhub.demo.repository.ReportRepository;
-import mn.internhub.demo.repository.StudentRepository;
-import mn.internhub.demo.repository.TeacherRepository;
-import mn.internhub.demo.repository.UserRepository;
+import mn.internhub.demo.repository.*;
+import mn.internhub.demo.service.helperFunctions.gimmeId;
 import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,6 +37,12 @@ public class ReportService {
     private TeacherRepository teacherRepository;
     @Autowired
     private isItExist isItExist;
+    @Autowired
+    private FileEntityRepository fileEntityRepository;
+    @Autowired
+    private FileEntityService fileEntityService;
+    @Autowired
+    private gimmeId gimmeId;
 
     //сурагч нь тайлангаа багшруу явуулах
     public Report createReport(User user, RequestCreateReport request) {
@@ -52,13 +61,38 @@ public class ReportService {
         return report;
     }
     //сурагч нь өөрйин явуулсан тайлангаа авах
-    public List<Report> getStudentReport(Long userId) {
+    public List<ResponseReport> getStudentReport(Long userId) {
         isItExist.isStudentByUserId(userId);
-        Long studentId = studentRepository.findByUserId(userId).getStudentId();
-        return reportRepository.findAllByStudentId(studentId);
+        Long studentId = gimmeId.userIdToStudentId(userId);
+
+        List<Report> reports = reportRepository.findAllByStudentId(studentId);
+        return reports.stream()
+                .map((report)->{
+                    FileEntity fileEntity = fileEntityRepository.findByReportIdAndContentTypes(report.getReportId(), ContentTypes.REPORT);
+
+
+                    return ResponseReport.builder()
+                            .reportId(report.getReportId())
+                            .teacherId(report.getTeacherId())
+                            .studentId(report.getStudentId())
+                            .title(report.getTitle())
+                            .status(report.getStatus())
+                            .description(report.getDescription())
+                            .teacherComment(report.getTeacherComment())
+                            .createdAt(report.getCreatedAt())
+                            .approvedAt(report.getApprovedAt())
+                            .fileId(fileEntity != null ? fileEntity.getFileId() : null)
+                            .fileName(fileEntity != null ? fileEntity.getFileName() : null)
+                            .fileType(fileEntity != null ? fileEntity.getFileType() : null)
+                            .data(fileEntity != null ? fileEntity.getData() : null)
+                            .contentTypes(fileEntity != null ? fileEntity.getContentTypes() : null)
+                            .build();
+
+                })
+                .toList();
     }
     //тайланг id-гаар нь авах
-    public Report getReportById(Long userId, Long reportId) {
+    public ResponseReport getReportById(Long userId, Long reportId) {
         //эхлээд тайлан нь байгаа эсхийг нь шалгаад
         boolean isExist = reportRepository.existsById(reportId);
         if (!isExist){
@@ -86,7 +120,25 @@ public class ReportService {
         else {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"хэн бээ чи");
         }
-        return reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new);
+        Report report = reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new);
+        FileEntity fileEntity = fileEntityRepository.findByReportIdAndContentTypes(report.getReportId(), ContentTypes.REPORT);
+        return ResponseReport.builder()
+                .reportId(report.getReportId())
+                .teacherId(report.getTeacherId())
+                .studentId(report.getStudentId())
+                .title(report.getTitle())
+                .status(report.getStatus())
+                .description(report.getDescription())
+                .teacherComment(report.getTeacherComment())
+                .createdAt(report.getCreatedAt())
+                .approvedAt(report.getApprovedAt())
+                .fileId(fileEntity.getReportId())
+                .userId(fileEntity.getUserId())
+                .fileName(fileEntity.getFileName())
+                .fileType(fileEntity.getFileType())
+                .data(fileEntity.getData())
+                .contentTypes(fileEntity.getContentTypes())
+                .build();
     }
     //тухайн сурачг нь өөрийн оруулсан тайлангаа засах
     public Report updateReport(Long userId,Long reportId, RequestUpdateReport request) {
