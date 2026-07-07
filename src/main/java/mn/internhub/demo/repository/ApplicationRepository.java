@@ -22,4 +22,6 @@ public interface ApplicationRepository extends JpaRepository<Application,Long> {
     Application findByInternshipPostId(Long evaluationId);
 
     Application findByStudentId(Long studentId);
+
+    Integer countByStudentIdAndStatus(Long studentId, Status status);
 }

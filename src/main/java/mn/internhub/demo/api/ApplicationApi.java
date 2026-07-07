@@ -3,10 +3,7 @@ package mn.internhub.demo.api;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mn.internhub.demo.api.dto.applicationApiDto.RequestApplication;
-import mn.internhub.demo.api.dto.applicationApiDto.RequestStatus;
-import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationDetail;
-import mn.internhub.demo.api.dto.applicationApiDto.ResponseApplicationsToOrganization;
+import mn.internhub.demo.api.dto.applicationApiDto.*;
 import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.data.enums.Status;
@@ -49,5 +46,11 @@ public class ApplicationApi {
     public List<ResponseApplicationsToOrganization> getPendingApplications(@AuthenticationPrincipal User user){
         return applicationService.getPendingApplications(user.getUserId());
     }
+    //сурагч нь өөрйин илгээсэн application-уудийн төлвийн тоог авна
+    @GetMapping("/status")
+    public ResponseStatusCount getStatusCount(@AuthenticationPrincipal User user){
+        return applicationService.getStatusCount(user.getUserId());
+    }
+
 
 }

@@ -184,4 +184,22 @@ public class ApplicationService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "application doesn't found");
         }
     }
+    //сурагч нь өөрйин илгээсэн application-уудийн төлвийн тоог авна
+    public ResponseStatusCount getStatusCount(Long userId) {
+        isItExist.isStudentByUserId(userId);
+        log.info("энэ хүртэл 1");
+        Long studentId = gimmeId.userIdToStudentId(userId);
+        log.info("энэ хүртэл 2");
+        Integer pending = applicationRepository.countByStudentIdAndStatus(studentId, Status.PENDING);
+        log.info("энэ хүртэл 3");
+        Integer rejected = applicationRepository.countByStudentIdAndStatus(studentId, Status.REJECTED);
+        log.info("энэ хүртэл 4");
+        Integer accepted = applicationRepository.countByStudentIdAndStatus(studentId, Status.ACCEPTED);
+        log.info("энэ хүртэл 5");
+        return ResponseStatusCount.builder()
+                .pending(pending)
+                .rejected(rejected)
+                .accepted(accepted)
+                .build();
+    }
 }
