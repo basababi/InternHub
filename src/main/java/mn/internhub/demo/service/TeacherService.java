@@ -1,6 +1,7 @@
 package mn.internhub.demo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import mn.internhub.demo.api.dto.authApiDto.AuthResponse;
 import mn.internhub.demo.api.dto.teacherApiDto.RequestProfile;
 import mn.internhub.demo.api.dto.teacherApiDto.RequestSaveOwnStudent;
 import mn.internhub.demo.data.Student;
@@ -58,7 +59,7 @@ public class TeacherService {
         Long teacherId = gimmeId.userIdToTeacherId(userId);
         return studentRepository.findAllByTeacherId(teacherId);
     }
-
+    //Add own student
     public Student saveOwnStudent(Long userId, RequestSaveOwnStudent request) {
         isItExist.isTeacherByUserId(userId);
         boolean isExist = userRepository.existsByEmail(request.email());
@@ -81,5 +82,17 @@ public class TeacherService {
         student.setTeacherId(teacherId);
         studentRepository.save(student);
         return student;
+    }
+    //delete own student
+    public void deleteOwnStudent(Long userId, Long studentId) {
+        isItExist.isTeacherByUserId(userId);
+        isItExist.isStudentByUserId(studentId);
+        Long teacherId = gimmeId.userIdToTeacherId(userId);
+        Student student = studentRepository.findById(studentId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"сурагч олдсонгүй"));
+        if (student.getTeacherId() != teacherId){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чи багш нь биш байна");
+        }
+        student.setTeacherId(null);
+        studentRepository.save(student);
     }
 }
