@@ -95,4 +95,10 @@ public class TeacherService {
         student.setTeacherId(null);
         studentRepository.save(student);
     }
+    //get count of own students
+    public Integer getCountOfStudent(Long userId) {
+        isItExist.isTeacherByUserId(userId);
+        Long teacherId = gimmeId.userIdToTeacherId(userId);
+        return studentRepository.countAllByTeacherId(teacherId);
+    }
 }

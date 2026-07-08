@@ -51,7 +51,10 @@ public class TeacherApi {
         teacherService.deleteOwnStudent(user.getUserId(), studentId);
         return ResponseEntity.ok("ажмилттай нууц үг солигдлоо");
     }
-    
-
+    //get count of own students
+    @GetMapping("/studentsnum")
+    public Integer getCountOfStudent(@AuthenticationPrincipal User user){
+        return teacherService.getCountOfStudent(user.getUserId());
+    }
 
 }

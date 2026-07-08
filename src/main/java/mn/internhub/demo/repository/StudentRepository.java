@@ -10,4 +10,6 @@ public interface StudentRepository extends JpaRepository<Student,Long> {
     boolean existsByUserId(Long userId);
 
     List<Student> findAllByTeacherId(Long teacherId);
+
+    Integer countAllByTeacherId(Long teacherId);
 }
