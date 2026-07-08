@@ -1,0 +1,32 @@
+package mn.internhub.demo.api;
+
+import mn.internhub.demo.api.dto.teacherApiDto.RequestProfile;
+import mn.internhub.demo.data.Teacher;
+import mn.internhub.demo.data.User;
+import mn.internhub.demo.service.TeacherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/teacher")
+public class TeacherApi {
+    @Autowired
+    private TeacherService teacherService;
+
+    //change own profile data
+    @PutMapping("/profile")
+    public Teacher changeOwnProfile(@AuthenticationPrincipal User user, @RequestBody RequestProfile request) {
+        return teacherService.changeOwnProfile(user.getUserId(), request);
+    }
+
+    //get own profile data
+    @GetMapping("/profile")
+    public Teacher geOwnProfile(@AuthenticationPrincipal User user) {
+        return teacherService.getOwnProfile(user.getUserId());
+    }
+
+
+
+
+}
