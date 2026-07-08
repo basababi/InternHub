@@ -2,14 +2,18 @@ package mn.internhub.demo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.teacherApiDto.RequestProfile;
+import mn.internhub.demo.api.dto.teacherApiDto.RequestSaveOwnStudent;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.Teacher;
 import mn.internhub.demo.repository.StudentRepository;
 import mn.internhub.demo.repository.TeacherRepository;
+import mn.internhub.demo.repository.UserRepository;
 import mn.internhub.demo.service.helperFunctions.gimmeId;
 import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -24,6 +28,8 @@ public class TeacherService {
     private isItExist isItExist;
     @Autowired
     private gimmeId gimmeId;
+    @Autowired
+    private UserRepository userRepository;
 
     //change own profile data
     public Teacher changeOwnProfile(Long userId, RequestProfile request) {
@@ -51,5 +57,29 @@ public class TeacherService {
         isItExist.isTeacherByUserId(userId);
         Long teacherId = gimmeId.userIdToTeacherId(userId);
         return studentRepository.findAllByTeacherId(teacherId);
+    }
+
+    public Student saveOwnStudent(Long userId, RequestSaveOwnStudent request) {
+        isItExist.isTeacherByUserId(userId);
+        boolean isExist = userRepository.existsByEmail(request.email());
+        if (!isExist){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"ийм хүн байхгүй байна");
+        }
+        boolean isStudent = studentRepository.existsByUserId(userRepository.findByEmail(request.email()).orElseThrow(IllegalStateException::new).getUserId());
+        if (!isStudent){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"ийм сурагч байхгүй байна");
+        }
+        Student student = studentRepository.findByUserId(userRepository.findByEmail(request.email()).orElseThrow(IllegalStateException::new).getUserId());
+        boolean isCorrectStudent = student.getFirstName().equals(request.firstName());
+        if (!isCorrectStudent){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"сурагчийн мэдээлэл зөрүүтэй байна");
+        }
+        if (student.getTeacherId() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"аль хэдийн багшид бүртгэлтэй байна");
+        }
+        Long teacherId = gimmeId.userIdToTeacherId(userId);
+        student.setTeacherId(teacherId);
+        studentRepository.save(student);
+        return student;
     }
 }

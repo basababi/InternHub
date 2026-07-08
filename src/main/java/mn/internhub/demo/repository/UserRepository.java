@@ -1,5 +1,6 @@
 package mn.internhub.demo.repository;
 
+import jakarta.validation.constraints.NotBlank;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
+    boolean existsByEmail(@NotBlank String email);
 }

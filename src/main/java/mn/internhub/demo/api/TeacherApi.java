@@ -2,6 +2,7 @@ package mn.internhub.demo.api;
 
 import jdk.dynalink.linker.LinkerServices;
 import mn.internhub.demo.api.dto.teacherApiDto.RequestProfile;
+import mn.internhub.demo.api.dto.teacherApiDto.RequestSaveOwnStudent;
 import mn.internhub.demo.api.dto.teacherApiDto.ResponseAllStudnets;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.Teacher;
@@ -34,6 +35,11 @@ public class TeacherApi {
     @GetMapping("/students")
     public List<Student> getAllOwnStudent(@AuthenticationPrincipal User user){
         return teacherService.getAllOwnStudent(user.getUserId());
+    }
+    //Add own student
+    @PutMapping("/student")
+    public Student saveOwnStudent(@AuthenticationPrincipal User user, @RequestBody RequestSaveOwnStudent request){
+        return teacherService.saveOwnStudent(user.getUserId(), request);
     }
 
 
