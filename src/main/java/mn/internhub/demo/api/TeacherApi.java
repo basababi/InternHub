@@ -1,12 +1,17 @@
 package mn.internhub.demo.api;
 
+import jdk.dynalink.linker.LinkerServices;
 import mn.internhub.demo.api.dto.teacherApiDto.RequestProfile;
+import mn.internhub.demo.api.dto.teacherApiDto.ResponseAllStudnets;
+import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.Teacher;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/teacher")
@@ -25,8 +30,11 @@ public class TeacherApi {
     public Teacher geOwnProfile(@AuthenticationPrincipal User user) {
         return teacherService.getOwnProfile(user.getUserId());
     }
-
-
+    //get own related students
+    @GetMapping("/students")
+    public List<Student> getAllOwnStudent(@AuthenticationPrincipal User user){
+        return teacherService.getAllOwnStudent(user.getUserId());
+    }
 
 
 }

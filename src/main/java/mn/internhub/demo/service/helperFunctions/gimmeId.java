@@ -28,4 +28,6 @@ public class gimmeId {
     public Long userIdToStudentId(Long userId){
         return studentRepository.findByUserId(userId).getStudentId();
     }
+
+
 }
