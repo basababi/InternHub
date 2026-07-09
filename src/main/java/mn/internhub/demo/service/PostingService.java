@@ -183,6 +183,6 @@ public class PostingService {
     }
     //Заруудаас тодорхой утгатай ажлын чадвар шаардсан заруудыг буцаана
     public List<InternshipPost> getSearchPostBySkill(String skill) {
-        return internshipPostRepository.findAllByRequiredSkillsContaining(skill);
+        return internshipPostRepository.findAllByRequiredMajorsContaining(skill);
     }
 }

@@ -11,7 +11,7 @@ public interface InternshipPostRepository extends JpaRepository<InternshipPost,L
     List<InternshipPost> findAllByOrganizationId(Long organizationId);
 
 
-    List<InternshipPost> findAllByRequiredSkillsContaining(String skill);
+    List<InternshipPost> findAllByRequiredMajorsContaining(String skill);
 
 
     InternshipPost findByOrganizationId(Long organizationId);
