@@ -45,6 +45,12 @@ public class TeacherService {
         if(request.phone() != null){
             teacher.setPhone(request.phone());
         }
+        if (request.major() != null){
+            teacher.setMajor(request.major());
+        }
+        if (request.bio() != null){
+            teacher.setBio(request.bio());
+        }
         teacherRepository.save(teacher);
         return teacher;
     }
@@ -100,5 +106,10 @@ public class TeacherService {
         isItExist.isTeacherByUserId(userId);
         Long teacherId = gimmeId.userIdToTeacherId(userId);
         return studentRepository.countAllByTeacherId(teacherId);
+    }
+
+    public Teacher getTeacherDetail(Long userId, Long teacherId) {
+        isItExist.isTeacherExistByTeacherId(teacherId);
+        return teacherRepository.findByUserId(teacherId);
     }
 }

@@ -180,9 +180,7 @@ public class ReportService {
         Report report = reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new);
 
         report.setTeacherComment(request.teacherComment());
-        if (request.status().equals(Status.ACCEPTED)) {
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "аль хэдийн хүлээн авсан тайлан байна");
-        }
+        report.setScore(report.getScore());
         report.setStatus(report.getStatus());
         reportRepository.save(report);
         return report;

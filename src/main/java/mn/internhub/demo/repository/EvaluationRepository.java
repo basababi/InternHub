@@ -9,4 +9,8 @@ import java.util.List;
 public interface EvaluationRepository extends JpaRepository<Evaluation,Long> {
     Evaluation findByStudentId(Long studentId);
     List<Evaluation> findAllByStudentId(Long studentId);
+
+    List<Evaluation> findAllOrganizationId(Long orgId);
+
+    List<Evaluation> findAllByStudentIdAndStatus(Long studentId, EvaluationStatus evaluationStatus);
 }

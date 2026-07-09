@@ -168,5 +168,16 @@ public class EvaluationService {
                 )
                 .toList();
     }
+
+    public float getAvgScore(Long orgId) {
+        isItExist.isOrgByUserId(orgId);
+        List<Evaluation> evaluation = evaluationRepository.findAllOrganizationId(orgId);
+        Integer allScore = 0;
+        for (Evaluation evaluation1 : evaluation) {
+            allScore += evaluation1.getScore();
+        }
+        
+        return (float) allScore /evaluation.size();
+    }
 }
 

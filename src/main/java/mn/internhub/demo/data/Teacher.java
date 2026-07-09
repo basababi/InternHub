@@ -22,4 +22,6 @@ public class Teacher {
     private String firstName;
     private String lastName;
     private Double phone;
+    private String major;
+    private String bio;
 }

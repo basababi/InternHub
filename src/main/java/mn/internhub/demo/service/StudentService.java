@@ -1,10 +1,13 @@
 package mn.internhub.demo.service;
 
+import jakarta.persistence.Id;
 import lombok.extern.slf4j.Slf4j;
+import mn.internhub.demo.api.dto.studentApiDto.ResponseComment;
 import mn.internhub.demo.api.dto.studentApiDto.UpdateProfileRequest;
-import mn.internhub.demo.data.Application;
-import mn.internhub.demo.data.Student;
-import mn.internhub.demo.data.User;
+import mn.internhub.demo.data.*;
+import mn.internhub.demo.data.enums.EvaluationStatus;
+import mn.internhub.demo.data.enums.Role;
+import mn.internhub.demo.data.enums.Status;
 import mn.internhub.demo.repository.*;
 import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -32,6 +36,12 @@ public class StudentService {
     private isItExist isItExist;
     @Autowired
     private FileEntityService fileEntityService;
+    @Autowired
+    private ReportRepository reportRepository;
+    @Autowired
+    private EvaluationService evaluationService;
+    @Autowired
+    private EvaluationRepository evaluationRepository;
 
     public Student updateProfile(Long userId, UpdateProfileRequest updateRequest, MultipartFile file) {
         boolean userExist = userRepository.existsById(userId);
@@ -102,5 +112,52 @@ public class StudentService {
     //Бүртгэлтэй буй нийт сурагчийн тоо
     public long getAllStudentNum() {
         return studentRepository.count();
+    }
+
+    public float getAvgStudentScore(Long studentId) {
+        isItExist.isStudentExistByStudentId(studentId);
+        List<Report> reports = reportRepository.findAllStudentIdAndStatus(studentId, Status.ACCEPTED);
+        Integer reportScore = 0;
+        for (Report report : reports) {
+            reportScore+= report.getScore();
+        }
+        List<Evaluation> evaluations = evaluationRepository.findAllByStudentIdAndStatus(studentId, EvaluationStatus.EVALUATED);
+        Integer evaScore= 0;
+        for (Evaluation evaluation : evaluations) {
+            evaScore += evaluation.getScore();
+        }
+        return (float)(evaScore+reportScore)/(reports.size()+evaluations.size());
+    }
+
+    public List<ResponseComment> getStudentComment(Long studentId) {
+        isItExist.isStudentExistByStudentId(studentId);
+        List<Report> reports = reportRepository.findAllStudentIdAndStatus(studentId, Status.ACCEPTED);
+        List<ResponseComment> responseComment1 = reports.stream()
+                .map((report)->{
+                    return ResponseComment.builder()
+                            .role(Role.TEACHER)
+                            .name(teacherRepository.findById(report.getTeacherId()).orElseThrow(IllegalAccessError::new).getFirstName())
+                            .comment(report.getDescription())
+                            .score(report.getScore())
+                            .build();
+                        }
+                )
+                .toList();
+        List<Evaluation> evaluations = evaluationRepository.findAllByStudentIdAndStatus(studentId,EvaluationStatus.EVALUATED);
+        List<ResponseComment> responseComment2= evaluations.stream()
+                .map(evaluation -> {
+                    return ResponseComment.builder()
+                            .role(Role.COMPANY)
+                            .name(organizationRepository.findById(evaluation.getOrganizationId()).orElseThrow(IllegalAccessError::new).getOrganizationName())
+                            .comment(evaluation.getComment())
+                            .score(evaluation.getScore())
+                            .build();
+                        }
+                )
+                .toList();
+        List<ResponseComment> result = new ArrayList<>();
+        result.addAll(responseComment1);
+        result.addAll(responseComment2);
+        return result;
     }
 }

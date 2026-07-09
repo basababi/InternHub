@@ -2,6 +2,7 @@ package mn.internhub.demo.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mn.internhub.demo.api.dto.studentApiDto.ResponseComment;
 import mn.internhub.demo.api.dto.studentApiDto.UpdateProfileRequest;
 import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.FileEntity;
@@ -51,6 +52,14 @@ public class StudentApi {
     @GetMapping("/{studentId}")
     public Student getStudentProfile(@AuthenticationPrincipal User user, @PathVariable Long studentId){
         return studentService.getStudentProfile(studentId);
+    }
+    @GetMapping("/avg/{studentId}")
+    public float getAvgStudentScore(@AuthenticationPrincipal User user ,@PathVariable Long studentId){
+        return studentService.getAvgStudentScore(studentId);
+    }
+    @GetMapping("/comments/{studentId}")
+    public List<ResponseComment> getStudentComment(@AuthenticationPrincipal User user, @PathVariable Long studentId){
+        return studentService.getStudentComment(studentId);
     }
     //тухайн сурагч нь өөрийн явуулсан анкетүүдийн мэдээллийг авах
     @GetMapping("/application")

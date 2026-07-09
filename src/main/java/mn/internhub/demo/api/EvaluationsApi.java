@@ -44,6 +44,11 @@ public class EvaluationsApi {
     public List<ResponseEvaluation> getAllEvaluation(@AuthenticationPrincipal User user){
         return evaluationService.getAllEvaluation(user.getUserId());
     }
+    //байгууллаг нь үнэлгээний дундажийг нь авах
+    @GetMapping("/avg/{orgId}")
+    public float getAvgScore(@PathVariable Long orgId){
+        return evaluationService.getAvgScore(orgId);
+    }
 
 
 

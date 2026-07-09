@@ -28,5 +28,6 @@ public class Report {
     private String teacherComment;
     private LocalDate createdAt;
     private LocalDate approvedAt;
+    private Integer score;
 
 }

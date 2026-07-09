@@ -66,7 +66,6 @@ public class ReportApi {
     //багш нь тайланг үзсэний дараагаар тайлбар гэх мэт зүйл оруулна
     @PutMapping("/{reportId}/review")
     public Report reviewReports(@AuthenticationPrincipal User user,@PathVariable Long reportId ,@RequestBody RequestReviewReport request){
-
         return reportService.reviewReport(user.getUserId(), reportId,request);
     }
 }

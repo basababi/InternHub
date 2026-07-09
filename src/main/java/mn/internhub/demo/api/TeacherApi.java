@@ -35,6 +35,11 @@ public class TeacherApi {
     public Teacher geOwnProfile(@AuthenticationPrincipal User user) {
         return teacherService.getOwnProfile(user.getUserId());
     }
+    //get teacher detail
+    @GetMapping("/{teacherId}")
+    public Teacher getTeacherDetail(@AuthenticationPrincipal User user, @PathVariable Long teacherId){
+        return teacherService.getTeacherDetail(user.getUserId(),teacherId);
+    }
     //get own related students
     @GetMapping("/students")
     public List<Student> getAllOwnStudent(@AuthenticationPrincipal User user){
