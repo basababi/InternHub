@@ -171,7 +171,7 @@ public class EvaluationService {
 
     public float getAvgScore(Long orgId) {
         isItExist.isOrgByUserId(orgId);
-        List<Evaluation> evaluation = evaluationRepository.findAllOrganizationId(orgId);
+        List<Evaluation> evaluation = evaluationRepository.findAllByOrganizationId(orgId);
         Integer allScore = 0;
         for (Evaluation evaluation1 : evaluation) {
             allScore += evaluation1.getScore();

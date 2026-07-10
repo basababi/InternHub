@@ -116,7 +116,7 @@ public class StudentService {
 
     public float getAvgStudentScore(Long studentId) {
         isItExist.isStudentExistByStudentId(studentId);
-        List<Report> reports = reportRepository.findAllStudentIdAndStatus(studentId, Status.ACCEPTED);
+        List<Report> reports = reportRepository.findAllByStudentIdAndStatus(studentId, Status.ACCEPTED);
         Integer reportScore = 0;
         for (Report report : reports) {
             reportScore+= report.getScore();
@@ -131,18 +131,6 @@ public class StudentService {
 
     public List<ResponseComment> getStudentComment(Long studentId) {
         isItExist.isStudentExistByStudentId(studentId);
-        List<Report> reports = reportRepository.findAllStudentIdAndStatus(studentId, Status.ACCEPTED);
-        List<ResponseComment> responseComment1 = reports.stream()
-                .map((report)->{
-                    return ResponseComment.builder()
-                            .role(Role.TEACHER)
-                            .name(teacherRepository.findById(report.getTeacherId()).orElseThrow(IllegalAccessError::new).getFirstName())
-                            .comment(report.getDescription())
-                            .score(report.getScore())
-                            .build();
-                        }
-                )
-                .toList();
         List<Evaluation> evaluations = evaluationRepository.findAllByStudentIdAndStatus(studentId,EvaluationStatus.EVALUATED);
         List<ResponseComment> responseComment2= evaluations.stream()
                 .map(evaluation -> {
@@ -156,7 +144,6 @@ public class StudentService {
                 )
                 .toList();
         List<ResponseComment> result = new ArrayList<>();
-        result.addAll(responseComment1);
         result.addAll(responseComment2);
         return result;
     }
