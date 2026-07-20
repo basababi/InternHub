@@ -18,7 +18,7 @@ public class FileEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, unique = true)
     private Long fileId;
-
+    @Column(unique = true)
     private Long reportId;
     private Long userId;
     private String fileName;
