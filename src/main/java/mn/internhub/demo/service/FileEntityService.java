@@ -150,6 +150,7 @@ public class FileEntityService {
         if (!isExist){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"байхгүй байна");
         }
+        log.info("дада 2");
         boolean isOwner = gimmeId.userIdToStudentId(userId).equals(reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new).getStudentId());
         if (!isOwner){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"хэн юм бэээ чи");
@@ -162,6 +163,8 @@ public class FileEntityService {
             fileEntity.setData(file.getBytes());
             fileEntity.setFileName(fileEntity.getFileName());
             fileEntity.setFileType(file.getContentType());
+            fileEntity.setReportId(reportId);
+
             fileRepository.save(fileEntity);
         }
         catch (IOException e) {

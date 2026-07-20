@@ -185,4 +185,17 @@ public class ReportService {
         reportRepository.save(report);
         return report;
     }
+
+    public void deleteReport(Long userId, Long reportId) {
+        isItExist.isStudentByUserId(userId);
+        if (!reportRepository.existsById(reportId)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        boolean isOwner = reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new).getStudentId().equals(gimmeId.userIdToStudentId(userId));
+        if (!isOwner){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE);
+        }
+        reportRepository.deleteById(reportId);
+        fileEntityRepository.deleteByReportId(reportId);
+    }
 }

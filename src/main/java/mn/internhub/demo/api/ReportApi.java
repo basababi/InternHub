@@ -68,4 +68,8 @@ public class ReportApi {
     public Report reviewReports(@AuthenticationPrincipal User user,@PathVariable Long reportId ,@RequestBody RequestReviewReport request){
         return reportService.reviewReport(user.getUserId(), reportId,request);
     }
+    @DeleteMapping("/{reportId}")
+    public void deleteReport(@AuthenticationPrincipal User user, @PathVariable Long reportId){
+        reportService.deleteReport(user.getUserId(), reportId);
+    }
 }

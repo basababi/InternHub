@@ -10,4 +10,7 @@ public interface FileEntityRepository extends JpaRepository<FileEntity,Long> {
 
     FileEntity findByUserId(Long userId);
     FileEntity findByReportIdAndContentTypes(Long reportId, ContentTypes contentTypes);
+
+
+    void deleteByReportId(Long reportId);
 }

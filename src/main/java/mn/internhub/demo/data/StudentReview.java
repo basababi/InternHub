@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -21,6 +22,6 @@ public class StudentReview {
     private Long userId;
     private Float rate;
     private String Comment;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
 }
