@@ -46,7 +46,11 @@ public class AuthApi {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
-
+    //хэрэглэгч нь өөрийн role-доо таарсан id-ийг авах
+    @GetMapping("/myId")
+    public Long myId(@AuthenticationPrincipal User user){
+        return authService.myId(user);
+    }
     //token refresh
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@RequestBody RequestRefreshToken request){

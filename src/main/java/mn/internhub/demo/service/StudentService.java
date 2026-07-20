@@ -3,12 +3,14 @@ package mn.internhub.demo.service;
 import jakarta.persistence.Id;
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.studentApiDto.ResponseComment;
+import mn.internhub.demo.api.dto.studentApiDto.ResponseStudentPro;
 import mn.internhub.demo.api.dto.studentApiDto.UpdateProfileRequest;
 import mn.internhub.demo.data.*;
 import mn.internhub.demo.data.enums.EvaluationStatus;
 import mn.internhub.demo.data.enums.Role;
 import mn.internhub.demo.data.enums.Status;
 import mn.internhub.demo.repository.*;
+import mn.internhub.demo.service.helperFunctions.gimmeId;
 import mn.internhub.demo.service.helperFunctions.isItExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,8 +44,10 @@ public class StudentService {
     private EvaluationService evaluationService;
     @Autowired
     private EvaluationRepository evaluationRepository;
+    @Autowired
+    private gimmeId gimmeId;
 
-    public Student updateProfile(Long userId, UpdateProfileRequest updateRequest, MultipartFile file) {
+    public Student updateProfile(Long userId, UpdateProfileRequest updateRequest) {
         boolean userExist = userRepository.existsById(userId);
         if (!userExist) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user doesn't found");
@@ -83,15 +87,30 @@ public class StudentService {
             student.setTeacherId(updateRequest.teacherId());
         }
 
-        if (!fileEntityService.updateCv(userId,file)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"файл байршуулхад алдаа гарлаа");
-        }
+
         studentRepository.save(student);
         return student;
     }
     //сурагчийн мэдээллийг явуулах
-    public Student getProfile(Long userId) {
-        return studentRepository.findByUserId(userId);
+    public ResponseStudentPro getProfile(Long userId) {
+        isItExist.isStudentByUserId(userId);
+        Student student = studentRepository.findByUserId(userId);
+        User user = userRepository.getReferenceById(userId);
+        return ResponseStudentPro.builder()
+                .firstName(student.getFirstName())
+                .lastName(student.getLastName())
+                .major(student.getMajor())
+                .university(student.getUniversity())
+                .courseYear(student.getCourseYear())
+                .gpa(student.getGpa())
+                .phone(student.getPhone())
+                .shortBio(student.getShortBio())
+                .skills(student.getSkills())
+                .language(student.getLanguages())
+                .email(user.getEmail())
+                .teacherFirstName(student.getTeacherId() != null ? teacherRepository.getReferenceById(student.getTeacherId()).getFirstName():null)
+                .teacherPhone(student.getTeacherId() != null ? teacherRepository.getReferenceById(student.getTeacherId()).getPhone():null)
+                .build();
     }
 
     //сурагч нь өөрийн мэдээлэлээ авна
@@ -114,19 +133,20 @@ public class StudentService {
         return studentRepository.count();
     }
 
-    public float getAvgStudentScore(Long studentId) {
-        isItExist.isStudentExistByStudentId(studentId);
-        List<Report> reports = reportRepository.findAllByStudentIdAndStatus(studentId, Status.ACCEPTED);
-        Integer reportScore = 0;
-        for (Report report : reports) {
-            reportScore+= report.getScore();
-        }
+    public float getAvgStudentScore(Long userId) {
+        isItExist.isStudentByUserId(userId);
+        Long studentId = gimmeId.userIdToStudentId(userId);
+
         List<Evaluation> evaluations = evaluationRepository.findAllByStudentIdAndStatus(studentId, EvaluationStatus.EVALUATED);
+        if (evaluations.isEmpty()) {
+            return 0.0f;
+        }
+
         Integer evaScore= 0;
         for (Evaluation evaluation : evaluations) {
             evaScore += evaluation.getScore();
         }
-        return (float)(evaScore+reportScore)/(reports.size()+evaluations.size());
+        return (float)(evaScore)/(evaluations.size());
     }
 
     public List<ResponseComment> getStudentComment(Long studentId) {
@@ -146,5 +166,11 @@ public class StudentService {
         List<ResponseComment> result = new ArrayList<>();
         result.addAll(responseComment2);
         return result;
+    }
+
+    public void updateCV(Long userId,MultipartFile file) {
+        if (!fileEntityService.updateCv(userId,file)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"файл байршуулхад алдаа гарлаа");
+        }
     }
 }

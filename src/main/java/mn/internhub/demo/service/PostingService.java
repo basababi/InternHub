@@ -103,6 +103,7 @@ public class PostingService {
                 .status(PostStatus.OPEN)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .duration(request.duration())
                 .build();
         internshipPostRepository.save(createpost);
         PostViews postViews = PostViews.builder()
@@ -151,6 +152,9 @@ public class PostingService {
         }
         if (request.status() != null){
             post.setStatus(request.status());
+        }
+        if(request.duration() != null) {
+            post.setDuration(request.duration());
         }
         post.setUpdatedAt(LocalDateTime.now());
         internshipPostRepository.save(post);

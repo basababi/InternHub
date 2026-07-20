@@ -15,6 +15,7 @@ public record RequestUpdatePost(
         Integer salaryMax,
         Integer vacancyCount,
         LocalDateTime deadline,
-        PostStatus status
+        PostStatus status,
+        String duration
 ) {
 }

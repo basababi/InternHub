@@ -1,6 +1,7 @@
 package mn.internhub.demo.api;
 
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.applicationApiDto.*;
@@ -50,6 +51,11 @@ public class ApplicationApi {
     @GetMapping("/status")
     public ResponseStatusCount getStatusCount(@AuthenticationPrincipal User user){
         return applicationService.getStatusCount(user.getUserId());
+    }
+    //сурагч нь өөрийн илгээсэн a[plication-нуудийг авах
+    @GetMapping
+    public List<ResponseApplicationToStudent> getStudentApplication(@AuthenticationPrincipal User user){
+        return applicationService.getStudentApplication(user.getUserId());
     }
 
 

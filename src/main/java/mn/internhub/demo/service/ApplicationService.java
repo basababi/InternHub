@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.applicationApiDto.*;
 import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.InternshipPost;
+import mn.internhub.demo.data.Organizations;
 import mn.internhub.demo.data.Student;
 import mn.internhub.demo.data.enums.PaymentStatus;
 import mn.internhub.demo.data.enums.Status;
@@ -187,19 +188,37 @@ public class ApplicationService {
     //сурагч нь өөрйин илгээсэн application-уудийн төлвийн тоог авна
     public ResponseStatusCount getStatusCount(Long userId) {
         isItExist.isStudentByUserId(userId);
-        log.info("энэ хүртэл 1");
+
         Long studentId = gimmeId.userIdToStudentId(userId);
-        log.info("энэ хүртэл 2");
+
         Integer pending = applicationRepository.countByStudentIdAndStatus(studentId, Status.PENDING);
-        log.info("энэ хүртэл 3");
+
         Integer rejected = applicationRepository.countByStudentIdAndStatus(studentId, Status.REJECTED);
-        log.info("энэ хүртэл 4");
+
         Integer accepted = applicationRepository.countByStudentIdAndStatus(studentId, Status.ACCEPTED);
-        log.info("энэ хүртэл 5");
+
         return ResponseStatusCount.builder()
                 .pending(pending)
                 .rejected(rejected)
                 .accepted(accepted)
                 .build();
+    }
+    //сурагч нь өөрийн илгээсэн a[plication-нуудийг авах
+    public List<ResponseApplicationToStudent> getStudentApplication(Long userId) {
+        isItExist.isStudentByUserId(userId);
+        long studentId = gimmeId.userIdToStudentId(userId);
+        List<Application> myApplications = applicationRepository.findAllByStudentId(studentId);
+        return myApplications.stream().map((myApplication -> {
+            InternshipPost post = internshipPostRepository.findById(myApplication.getInternshipPostId()).orElseThrow(IllegalAccessError::new);
+            Organizations organization = organizationRepository.findById(post.getOrganizationId()).orElseThrow(IllegalAccessError::new);
+            return ResponseApplicationToStudent.builder()
+                    .postTitle(post.getTitle())
+                    .submittedAt(myApplication.getSubmittedAt())
+                    .description(post.getDescription())
+                    .status(myApplication.getStatus())
+                    .company(organization.getOrganizationName())
+                    .build();
+                }))
+                .toList();
     }
 }

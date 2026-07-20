@@ -142,4 +142,16 @@ public class AuthService {
         userRepository.save(user);
         return ResponseEntity.ok("Амжилттай нууц үг солигдлоо");
     }
+    //хэрэглэгч нь өөрийн role ID-ийг авна
+    public Long myId(User user) {
+        if(user.getRole() == Role.STUDENT){
+            return studentRepository.findByUserId(user.getUserId()).getStudentId();
+        }
+        else if( user.getRole() == Role.COMPANY){
+            return organizationRepository.findByUserId(user.getUserId()).getOrganizationId();
+        }
+        else {
+            return teacherRepository.findByUserId(user.getUserId()).getTeacherId();
+        }
+    }
 }

@@ -14,6 +14,7 @@ public record RequestCreatePost(
         Integer salaryMax,
         boolean isSalaryUnspecified,
         Integer vacancyCount,
-        LocalDateTime deadline
+        LocalDateTime deadline,
+        String duration
 ) {
 }

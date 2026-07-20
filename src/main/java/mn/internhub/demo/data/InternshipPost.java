@@ -38,4 +38,5 @@ public class InternshipPost {
     private PostStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String duration;
 }

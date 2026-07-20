@@ -3,6 +3,7 @@ package mn.internhub.demo.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.studentApiDto.ResponseComment;
+import mn.internhub.demo.api.dto.studentApiDto.ResponseStudentPro;
 import mn.internhub.demo.api.dto.studentApiDto.UpdateProfileRequest;
 import mn.internhub.demo.data.Application;
 import mn.internhub.demo.data.FileEntity;
@@ -37,25 +38,29 @@ public class StudentApi {
 
     //өөрийн мэдээллийн дэлгэрэнгүйг авах
     @GetMapping("/profile")
-    public Student getProfile(@AuthenticationPrincipal User user){
+    public ResponseStudentPro getProfile(@AuthenticationPrincipal User user){
         return studentService.getProfile(user.getUserId());
     }
     //өөрийн мэдээллийг дэлгэрэнгүй үүсгэх/өөрлчөх
     @PutMapping("/profile")
-    public Student updateProfile(@AuthenticationPrincipal User user, @RequestBody UpdateProfileRequest updateRequest,@RequestParam("file") MultipartFile file ){
+    public Student updateProfile(@AuthenticationPrincipal User user, @RequestBody UpdateProfileRequest updateRequest){
         if (updateRequest == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"null");
         }
-        return studentService.updateProfile(user.getUserId(), updateRequest, file);
+        return studentService.updateProfile(user.getUserId(), updateRequest);
+    }
+    @PutMapping("/cv")
+    public void updateCV(@AuthenticationPrincipal User user,@RequestParam("file") MultipartFile file  ){
+        studentService.updateCV( user.getUserId(),file);
     }
     //сурагчийн мэдээллийг багш, ажил олгогч нь дэлгэрэнгүй харах ингэхдээ тухайн сурагчийн student_id нь авах байдлаар
     @GetMapping("/{studentId}")
     public Student getStudentProfile(@AuthenticationPrincipal User user, @PathVariable Long studentId){
         return studentService.getStudentProfile(studentId);
     }
-    @GetMapping("/avg/{studentId}")
-    public float getAvgStudentScore(@AuthenticationPrincipal User user ,@PathVariable Long studentId){
-        return studentService.getAvgStudentScore(studentId);
+    @GetMapping("/avg")
+    public float getAvgStudentScore(@AuthenticationPrincipal User user){
+        return studentService.getAvgStudentScore(user.getUserId());
     }
     @GetMapping("/comments/{studentId}")
     public List<ResponseComment> getStudentComment(@AuthenticationPrincipal User user, @PathVariable Long studentId){
