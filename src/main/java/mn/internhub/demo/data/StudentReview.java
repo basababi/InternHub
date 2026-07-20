@@ -17,6 +17,7 @@ public class StudentReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long StudentReviewId;
 
+    private Long studentId;
     private Long userId;
     private Float rate;
     private String Comment;

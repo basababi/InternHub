@@ -3,10 +3,9 @@ package mn.internhub.demo.api.dto.studentReviewApiDto;
 import java.time.LocalDate;
 
 public record requestStudentReview(
-        Long userId,
+        Long studentId,
         Float rate,
-        String Comment,
-        LocalDate createdAt
+        String Comment
 ) {
 
 }
