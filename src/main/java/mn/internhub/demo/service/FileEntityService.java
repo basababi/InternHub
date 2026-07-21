@@ -2,6 +2,7 @@ package mn.internhub.demo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.data.FileEntity;
+import mn.internhub.demo.data.Report;
 import mn.internhub.demo.data.User;
 import mn.internhub.demo.data.enums.ContentTypes;
 import mn.internhub.demo.repository.FileEntityRepository;
@@ -16,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
+
 
 @Slf4j
 @Service
@@ -48,7 +49,8 @@ public class FileEntityService {
     //сурагч нь cv-файлаа солих өөрчлөх
     public Boolean updateCv(Long userId, MultipartFile file){
         if (!file.isEmpty()){
-            FileEntity cv = fileRepository.findByUserId(userId);
+            FileEntity cv = fileRepository.findByUserIdAndContentTypes(userId, ContentTypes.CV)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "CV файл олдсонгүй"));
             cv.setFileName(file.getOriginalFilename());
             cv.setFileType(file.getContentType());
             try {
@@ -64,11 +66,13 @@ public class FileEntityService {
     //өөрйин cv файлыг харах авах
     public FileEntity getCv(User user) {
         isItExist.isStudentByUserId(user.getUserId());
-        boolean isOwner = user.getUserId().equals(fileRepository.findByUserId(user.getUserId()).getUserId());
+        FileEntity cv = fileRepository.findByUserIdAndContentTypes(user.getUserId(), ContentTypes.CV)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "CV файл олдсонгүй"));
+        boolean isOwner = user.getUserId().equals(cv.getUserId());
         if (!isOwner){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чиний файл биш байна");
         }
-        return fileRepository.findByUserIdAndContentTypes(user.getUserId(),ContentTypes.CV);
+        return cv;
     }
 
     public ResponseEntity<String> createProfileImg(Long userId, MultipartFile file, ContentTypes contentTypes) {
@@ -93,7 +97,7 @@ public class FileEntityService {
     //өөрйин profile зургыг авах
     public FileEntity getProfileImg(Long userId, ContentTypes contentTypes) {
         isItExist.isStudentByUserId(userId);
-        return fileRepository.findByUserIdAndContentTypes(userId, contentTypes);
+        return fileRepository.findByUserIdAndContentTypes(userId, contentTypes).orElse(null);
     }
     //update own profile image
     public FileEntity updateProfileImg(Long userId, MultipartFile file, ContentTypes contentTypes) {
@@ -102,7 +106,7 @@ public class FileEntityService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"emptyyyyy");
         }
         log.info("энэ хүртэл асуудалгүй");
-        FileEntity proImg = fileRepository.findByUserIdAndContentTypes(userId,contentTypes);
+        FileEntity proImg = fileRepository.findByUserIdAndContentTypes(userId,contentTypes).orElse(null);
         proImg.setFileName(file.getOriginalFilename());
         proImg.setFileType(file.getContentType());
         try {
@@ -114,21 +118,34 @@ public class FileEntityService {
         return proImg;
     }
 
-    public ResponseEntity<String> createReportFile(Long userId, MultipartFile file, ContentTypes contentTypes, Long reportId) {
+    public ResponseEntity<String> createReportFile(
+            Long userId,
+            MultipartFile file,
+            ContentTypes contentTypes,
+            Long reportId) {
+
         isItExist.isStudentByUserId(userId);
-        boolean isExist = reportRepository.existsById(reportId);
-        if (!isExist){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"байхгүй байна");
+
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Report байхгүй байна"));
+
+        if (!gimmeId.userIdToStudentId(userId).equals(report.getStudentId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Энэ report таны биш");
         }
-        boolean isOwner = gimmeId.userIdToStudentId(userId).equals(reportRepository.findById(reportId).orElseThrow(IllegalAccessError::new).getStudentId());
-        if (!isOwner){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"хэн юм бэээ чи");
+
+        if (file.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Файл хоосон байна");
         }
-        if (file.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"emptyy");
-        }
+
         try {
-            FileEntity proImg = FileEntity.builder()
+            FileEntity entity = FileEntity.builder()
                     .userId(userId)
                     .reportId(reportId)
                     .fileName(file.getOriginalFilename())
@@ -136,12 +153,17 @@ public class FileEntityService {
                     .contentTypes(contentTypes)
                     .data(file.getBytes())
                     .build();
-            fileRepository.save(proImg);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return ResponseEntity.ok("ажмилттай");
 
+            fileRepository.save(entity);
+
+        } catch (IOException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Файл хадгалж чадсангүй",
+                    e);
+        }
+
+        return ResponseEntity.ok("Амжилттай");
     }
 
     public ResponseEntity<String> updateFile(Long userId, Long reportId, MultipartFile file) {

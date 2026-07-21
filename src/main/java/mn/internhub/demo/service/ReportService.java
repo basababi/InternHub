@@ -1,5 +1,6 @@
 package mn.internhub.demo.service;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.reportApiDto.RequestCreateReport;
 import mn.internhub.demo.api.dto.reportApiDto.RequestReviewReport;
@@ -185,8 +186,9 @@ public class ReportService {
         reportRepository.save(report);
         return report;
     }
-
+    @Transactional
     public void deleteReport(Long userId, Long reportId) {
+        log.info("gfgvhkj; 1");
         isItExist.isStudentByUserId(userId);
         if (!reportRepository.existsById(reportId)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
