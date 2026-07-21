@@ -49,9 +49,14 @@ public class StudentApi {
         }
         return studentService.updateProfile(user.getUserId(), updateRequest);
     }
-    @PutMapping("/cv")
+    @PutMapping("/profile/cv")
     public void updateCV(@AuthenticationPrincipal User user,@RequestParam("file") MultipartFile file  ){
         studentService.updateCV( user.getUserId(),file);
+    }
+    //get userCV file
+    @GetMapping("/profile/cv")
+    public FileEntity getCv(@AuthenticationPrincipal User user){
+        return fileService.getCv(user);
     }
     //сурагчийн мэдээллийг багш, ажил олгогч нь дэлгэрэнгүй харах ингэхдээ тухайн сурагчийн student_id нь авах байдлаар
     @GetMapping("/{studentId}")
@@ -80,16 +85,6 @@ public class StudentApi {
     @GetMapping("/all")
     public long getAllStudentNum(){
         return studentService.getAllStudentNum();
-    }
-    //cv-гээ оруулах
-    @PostMapping("/profile/cv")
-    public void createCv(@AuthenticationPrincipal User user,@RequestParam("file") MultipartFile file) throws IOException {
-        fileService.createCV(user, file);
-    }
-    //get userCV file
-    @GetMapping("/profile/cv")
-    public FileEntity getCv(@AuthenticationPrincipal User user){
-        return fileService.getCv(user);
     }
     //Post user profile image
     @PostMapping("/profile/img")

@@ -6,6 +6,7 @@ import mn.internhub.demo.api.dto.studentApiDto.ResponseComment;
 import mn.internhub.demo.api.dto.studentApiDto.ResponseStudentPro;
 import mn.internhub.demo.api.dto.studentApiDto.UpdateProfileRequest;
 import mn.internhub.demo.data.*;
+import mn.internhub.demo.data.enums.ContentTypes;
 import mn.internhub.demo.data.enums.EvaluationStatus;
 import mn.internhub.demo.data.enums.Role;
 import mn.internhub.demo.data.enums.Status;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,9 +41,7 @@ public class StudentService {
     @Autowired
     private FileEntityService fileEntityService;
     @Autowired
-    private ReportRepository reportRepository;
-    @Autowired
-    private EvaluationService evaluationService;
+    private FileEntityRepository fileRepository;
     @Autowired
     private EvaluationRepository evaluationRepository;
     @Autowired
@@ -168,9 +168,20 @@ public class StudentService {
         return result;
     }
 
-    public void updateCV(Long userId,MultipartFile file) {
-        if (!fileEntityService.updateCv(userId,file)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"файл байршуулхад алдаа гарлаа");
+    public void updateCV(Long userId,MultipartFile file){
+        try {
+        if (file.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "empty");
+        }
+        FileEntity fileEntity = fileRepository.findByUserIdAndContentTypes(userId, ContentTypes.CV).orElseThrow(IllegalAccessError::new);
+        fileEntity.setFileName(file.getOriginalFilename());
+        fileEntity.setFileType(file.getContentType());
+        fileEntity.setContentTypes(ContentTypes.CV);
+        fileEntity.setData(file.getBytes());
+            
+        fileRepository.save(fileEntity);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

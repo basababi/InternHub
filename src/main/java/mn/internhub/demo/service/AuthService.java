@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import mn.internhub.demo.api.dto.authApiDto.RegisterOrganizationRequest;
 import mn.internhub.demo.api.dto.authApiDto.*;
 import mn.internhub.demo.data.*;
+import mn.internhub.demo.data.enums.ContentTypes;
 import mn.internhub.demo.data.enums.Role;
 import mn.internhub.demo.data.enums.UserStatus;
 import mn.internhub.demo.repository.*;
@@ -42,6 +43,8 @@ public class AuthService {
     private AdminRepository adminRepository;
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private FileEntityRepository fileEntityRepository;
 
     public AuthResponse registerStudent(@Valid RegisterStudentRequest request) {
         User user = baseRegister(request.baseRequest());
@@ -53,6 +56,11 @@ public class AuthService {
                 .build();
         studentRepository.save(student);
         String token = jwtService.generateToken(user);
+        FileEntity fileEntity = FileEntity.builder()
+                .userId(user.getUserId())
+                .contentTypes(ContentTypes.CV)
+                .build();
+        fileEntityRepository.save(fileEntity);
         return new AuthResponse(token);
     }
     //багш бүртгүүлэх

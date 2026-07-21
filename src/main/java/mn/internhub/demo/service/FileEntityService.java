@@ -30,22 +30,6 @@ public class FileEntityService {
     private gimmeId gimmeId;
     @Autowired
     private ReportRepository reportRepository;
-
-    //сурагч нь cv файлаа илгээнээ
-    public void createCV(User user, MultipartFile file) throws IOException {
-        if (file.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "empty");
-        }
-        isItExist.isStudentByUserId(user.getUserId());
-        FileEntity fileVar = FileEntity.builder()
-                .userId(user.getUserId())
-                .fileName(file.getOriginalFilename())
-                .fileType(file.getContentType())
-                .contentTypes(ContentTypes.CV)
-                .data(file.getBytes())
-                .build();
-        fileRepository.save(fileVar);
-    }
     //сурагч нь cv-файлаа солих өөрчлөх
     public Boolean updateCv(Long userId, MultipartFile file){
         if (!file.isEmpty()){
@@ -66,13 +50,8 @@ public class FileEntityService {
     //өөрйин cv файлыг харах авах
     public FileEntity getCv(User user) {
         isItExist.isStudentByUserId(user.getUserId());
-        FileEntity cv = fileRepository.findByUserIdAndContentTypes(user.getUserId(), ContentTypes.CV)
+        return fileRepository.findByUserIdAndContentTypes(user.getUserId(), ContentTypes.CV)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "CV файл олдсонгүй"));
-        boolean isOwner = user.getUserId().equals(cv.getUserId());
-        if (!isOwner){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"чиний файл биш байна");
-        }
-        return cv;
     }
 
     public ResponseEntity<String> createProfileImg(Long userId, MultipartFile file, ContentTypes contentTypes) {
